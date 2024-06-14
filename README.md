@@ -1,2 +1,2 @@
 # yusina
-style repo
+everything needed for pretty figures
