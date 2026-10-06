@@ -1,23 +1,30 @@
-import os, logging
+"""Apply the yusina style to matplotlib."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import matplotlib as mpl
+
+from yusina import tokens as t
+from yusina._rcparams import build_rc
+
+MPLSTYLE = Path(__file__).parent / "yusina.mplstyle"  # for `plt.style.use(MPLSTYLE)`
 
 
-import matplotlib.pyplot as plt
+def set_style(scale: float | str = 1.0) -> None:
+    """Apply the yusina style to the current matplotlib session.
 
+    ``scale`` is a plotting *context*: it multiplies every point size, line
+    width, marker size and pad in the sheet (not colours, weights or styles).
+    Pass a float, or a name from ``tokens.CONTEXTS`` ("paper", "notebook",
+    "talk", "poster").
 
-def set_style() -> None:
+        set_style()            # notebook baseline
+        set_style("poster")
+        set_style(1.25)        # custom
     """
-    Set the style of the plot to biostylefoni
-    """
-    # get path of this script
-    script_path = os.path.dirname(os.path.realpath(__file__))
-    # parent_path = os.path.dirname(script_path)
-    # utils_path = os.path.join(parent_path, "utils")
-    utils_path = os.path.join(script_path)
-    logging.debug(f"utils_path: {utils_path}")
-    style_path = os.path.join(utils_path, "biostylefoni.mplstyle")
-    # set style
-    try:
-        plt.style.use(style_path)
-    except:
-        logging.warning("Could not set style to biostylefoni. Prepare for ugly plots")
-    return None
+    if isinstance(scale, str):
+        scale = t.CONTEXTS[scale]
+    valid = set(mpl.rcParams)
+    mpl.rcParams.update({k: v for k, v in build_rc(scale).items() if k in valid})
