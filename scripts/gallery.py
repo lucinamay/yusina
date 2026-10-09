@@ -1,8 +1,8 @@
 """Standard plots that exercise every yusina style setting.
 
-    python scripts/gallery.py [context|scale] [out.png]
+    python scripts/gallery.py [context|scale] [register] [out.png]
     python scripts/gallery.py talk
-    python scripts/gallery.py 1.25 gallery_big.png
+    python scripts/gallery.py 1.25 formal gallery_big.png
 
 Applies set_style(), then draws one panel per plot family so a change in
 tokens.py shows up somewhere: cycle, markers, legend, titles, axis labels,
@@ -21,7 +21,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import matplotlib.pyplot as plt
 import numpy as np
 
-from yusina import set_style, tokens as t
+from yusina import set_style
+from yusina import tokens as t
+from yusina.figures import _set_ax_boxplot_i_colour
 
 rng = np.random.default_rng(0)
 
@@ -58,7 +60,9 @@ def bars(ax):
 
 def boxes(ax):
     data = [rng.normal(i, 1 + 0.3 * i, 200) for i in range(5)]
-    ax.boxplot(data, notch=True, showmeans=True, tick_labels=list("vwxyz"))
+    bp = ax.boxplot(data, notch=True, showmeans=True, tick_labels=list("vwxyz"))
+    for i, c in enumerate(plt.rcParams["axes.prop_cycle"].by_key()["color"][: len(data)]):
+        _set_ax_boxplot_i_colour(bp, i, c, inner_alpha=1.0)
     ax.set(title="boxplot: notch · fliers · means", ylabel="value")
 
 
@@ -106,19 +110,21 @@ def twin_log(ax):
 PANELS = [lines, scatter, bars, boxes, errorbars, hist, image, area, twin_log]
 
 
-def build(scale):
-    set_style(scale)
+def build(scale, register=t.DEFAULT_REGISTER):
+    set_style(scale, register)
     fig, axs = plt.subplots(3, 3, figsize=(15, 12))
     for fn, ax in zip(PANELS, axs.flat):
         fn(ax)
-    fig.suptitle(f"yusina gallery — scale={scale!r}", fontweight="bold")
+    fig.suptitle(f"yusina gallery — scale={scale!r} register={register}", fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.97))
     return fig
 
 
 if __name__ == "__main__":
     args = sys.argv[1:]
+    register = next((a for a in args if a in t.REGISTERS), t.DEFAULT_REGISTER)
+    args = [a for a in args if a != register]
     scale = _arg_scale(args[0]) if args else "notebook"
-    out = Path(args[1]) if len(args) > 1 else Path("gallery.png")
-    build(scale).savefig(out, dpi=150)
+    out = Path(args[1]) if len(args) > 1 else Path(f"gallery_{register}.png")
+    build(scale, register).savefig(out, dpi=150)
     print("wrote", out)

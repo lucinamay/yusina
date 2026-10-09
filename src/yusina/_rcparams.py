@@ -9,21 +9,27 @@ from __future__ import annotations
 from cycler import cycler
 
 from yusina import tokens as t
+from yusina.colours import outline
 
 
-def build_rc(scale: float = 1.0) -> dict:
+def build_rc(scale: float = 1.0, register: str = t.DEFAULT_REGISTER) -> dict:
     """Full rcParams mapping for the yusina style.
 
     ``scale`` multiplies every point size, line width, marker size and pad
     (never colours, weights or line styles), so a caller can treat it as a
     plotting context: 1.0 notebook, ~1.4 talk, ~1.8 poster, ~0.8 paper.
+    ``register`` picks a ``tokens.REGISTERS`` entry: font stack and the
+    weight/spine/grid taste that goes with it.
     """
+    reg = t.REGISTERS[register]
     pt = t.FONT_PT * scale
     fs = {k: v * pt for k, v in t.FONT_SCALE.items()}
     lw = {k: v * scale for k, v in t.LINEWIDTH.items()}
     tick = {k: v * scale for k, v in t.TICK_LEN.items()}
     pad = {k: v * scale for k, v in t.PAD.items()}
-    ink, faint, box = t.INK, t.INK_FAINT, t.LINEWIDTH["box"] * scale
+    ink, box = t.INK, t.LINEWIDTH["box"] * scale
+    fill = reg["cycle"][0]
+    edge = outline(fill)  # outlines are a darker, more saturated fill; never ink
 
     rc = {
         # ---- lines & markers ----
@@ -31,8 +37,8 @@ def build_rc(scale: float = 1.0) -> dict:
         "lines.linestyle": "-",
         "lines.color": ink,
         "lines.marker": "None",
-        "lines.markerfacecolor": ink,
-        "lines.markeredgecolor": ink,
+        "lines.markerfacecolor": "auto",
+        "lines.markeredgecolor": "auto",
         "lines.markeredgewidth": 0.0,
         "lines.markersize": t.MARKER_PT * scale,
         "lines.antialiased": True,
@@ -46,8 +52,8 @@ def build_rc(scale: float = 1.0) -> dict:
         "pcolormesh.snap": True,
         # ---- patches & hatches ----
         "patch.linewidth": lw["patch"],
-        "patch.facecolor": t.CYCLE[0],
-        "patch.edgecolor": ink,
+        "patch.facecolor": fill,
+        "patch.edgecolor": edge,
         "patch.force_edgecolor": False,
         "patch.antialiased": True,
         "hatch.color": ink,
@@ -55,35 +61,35 @@ def build_rc(scale: float = 1.0) -> dict:
         # ---- boxplot ----
         "boxplot.notch": True,
         "boxplot.vertical": True,
-        "boxplot.patchartist": False,
+        "boxplot.patchartist": True,
         "boxplot.meanline": False,
         "boxplot.showmeans": False,
         "boxplot.showcaps": True,
         "boxplot.showbox": True,
         "boxplot.showfliers": True,
         "boxplot.flierprops.marker": "o",
-        "boxplot.flierprops.markerfacecolor": "none",
-        "boxplot.flierprops.markeredgecolor": faint,
+        "boxplot.flierprops.markerfacecolor": fill,
+        "boxplot.flierprops.markeredgecolor": edge,
         "boxplot.flierprops.markeredgewidth": box,
         "boxplot.flierprops.markersize": t.MARKER_PT_SMALL * scale,
         "boxplot.flierprops.linestyle": "none",
         "boxplot.flierprops.linewidth": box,
-        "boxplot.boxprops.color": faint,
+        "boxplot.boxprops.color": edge,
         "boxplot.boxprops.linewidth": box,
         "boxplot.boxprops.linestyle": "-",
-        "boxplot.whiskerprops.color": faint,
+        "boxplot.whiskerprops.color": edge,
         "boxplot.whiskerprops.linewidth": box,
         "boxplot.whiskerprops.linestyle": "-",
-        "boxplot.capprops.color": faint,
+        "boxplot.capprops.color": edge,
         "boxplot.capprops.linewidth": box,
         "boxplot.capprops.linestyle": "-",
-        "boxplot.medianprops.color": ink,
+        "boxplot.medianprops.color": edge,
         "boxplot.medianprops.linewidth": box,
         "boxplot.medianprops.linestyle": "-",
-        "boxplot.meanprops.color": faint,
+        "boxplot.meanprops.color": edge,
         "boxplot.meanprops.marker": "^",
-        "boxplot.meanprops.markerfacecolor": faint,
-        "boxplot.meanprops.markeredgecolor": faint,
+        "boxplot.meanprops.markerfacecolor": fill,
+        "boxplot.meanprops.markeredgecolor": edge,
         "boxplot.meanprops.markersize": t.MARKER_PT_SMALL * scale,
         "boxplot.meanprops.linestyle": "--",
         "boxplot.meanprops.linewidth": box,
@@ -94,20 +100,19 @@ def build_rc(scale: float = 1.0) -> dict:
         "font.weight": t.WEIGHT,
         "font.stretch": "normal",
         "font.size": pt,
-        "font.sans-serif": list(t.SANS),
+        "font.sans-serif": list(reg["sans"]),
         # ---- text ----
         "text.color": ink,
         "text.hinting": "force_autohint",
-        "text.hinting_factor": 8,
         "text.antialiased": True,
         "text.usetex": False,
         "mathtext.default": "regular",
-        "mathtext.fontset": "dejavusans",
+        "mathtext.fontset": reg["mathtext"],
         # ---- axes ----
         "axes.facecolor": t.CANVAS,
         "axes.edgecolor": ink,
-        "axes.linewidth": lw["axes"],
-        "axes.grid": True,
+        "axes.linewidth": reg["spine_lw"] * scale,
+        "axes.grid": reg["grid_alpha"] > 0,
         "axes.grid.axis": "both",
         "axes.grid.which": "major",
         "axes.axisbelow": True,
@@ -116,7 +121,7 @@ def build_rc(scale: float = 1.0) -> dict:
         "axes.labelsize": fs["axes_label"],
         "axes.labelpad": pad["axes_label"],
         "axes.titlecolor": ink,
-        "axes.titleweight": t.TITLE_WEIGHT,
+        "axes.titleweight": reg["title_weight"],
         "axes.titlesize": fs["axes_title"],
         "axes.titlelocation": "center",
         "axes.titlepad": pad["axes_title"],
@@ -124,7 +129,7 @@ def build_rc(scale: float = 1.0) -> dict:
         "axes.spines.bottom": True,
         "axes.spines.top": False,
         "axes.spines.right": False,
-        "axes.prop_cycle": cycler(color=list(t.CYCLE)),
+        "axes.prop_cycle": cycler(color=list(reg["cycle"])),
         "axes.xmargin": 0.05,
         "axes.ymargin": 0.05,
         "axes.zmargin": 0.05,
@@ -133,14 +138,14 @@ def build_rc(scale: float = 1.0) -> dict:
         "axes.formatter.use_mathtext": True,
         "axes.formatter.useoffset": True,
         "axes.formatter.offset_threshold": 4,
-        "axes.unicode_minus": True,
+        "axes.unicode_minus": reg["unicode_minus"],
         "axes3d.grid": True,
         "polaraxes.grid": True,
         # ---- grid ----
         "grid.color": t.GRID,
         "grid.linestyle": "-",
         "grid.linewidth": lw["grid"],
-        "grid.alpha": t.GRID_ALPHA,
+        "grid.alpha": reg["grid_alpha"],
         # ---- legend ----
         "legend.loc": "best",
         "legend.frameon": False,
@@ -164,7 +169,7 @@ def build_rc(scale: float = 1.0) -> dict:
         "legend.columnspacing": 2.0,
         # ---- figure ----
         "figure.titlesize": fs["figure_title"],
-        "figure.titleweight": t.TITLE_WEIGHT,
+        "figure.titleweight": reg["title_weight"],
         "figure.labelsize": fs["figure_label"],
         "figure.labelweight": t.WEIGHT,
         "figure.figsize": list(t.FIGSIZE),

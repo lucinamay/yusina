@@ -9,10 +9,10 @@ import matplotlib as mpl
 from yusina import tokens as t
 from yusina._rcparams import build_rc
 
-MPLSTYLE = Path(__file__).parent / "yusina.mplstyle"  # for `plt.style.use(MPLSTYLE)`
+MPLSTYLE = Path(__file__).parent / f"yusina-{t.DEFAULT_REGISTER}.mplstyle"  # for `plt.style.use(MPLSTYLE)`
 
 
-def set_style(scale: float | str = 1.0) -> None:
+def set_style(scale: float | str = 1.0, register: str = t.DEFAULT_REGISTER) -> None:
     """Apply the yusina style to the current matplotlib session.
 
     ``scale`` is a plotting *context*: it multiplies every point size, line
@@ -20,11 +20,14 @@ def set_style(scale: float | str = 1.0) -> None:
     Pass a float, or a name from ``tokens.CONTEXTS`` ("paper", "notebook",
     "talk", "poster").
 
-        set_style()            # notebook baseline
-        set_style("poster")
-        set_style(1.25)        # custom
+    ``register`` is the taste axis (``tokens.REGISTERS``): "clean" (default),
+    "formal", "latex", "biosynfoni".
+
+        set_style()                    # notebook, clean
+        set_style("paper", "formal")
+        set_style(1.25)                # custom scale
     """
     if isinstance(scale, str):
         scale = t.CONTEXTS[scale]
     valid = set(mpl.rcParams)
-    mpl.rcParams.update({k: v for k, v in build_rc(scale).items() if k in valid})
+    mpl.rcParams.update({k: v for k, v in build_rc(scale, register).items() if k in valid})

@@ -3,7 +3,7 @@
     python scripts/moodboard.py [out.png]
 
 Library-independent: reads tokens.py directly and draws each token the way it
-is actually used (INK as text/spine/tick, INK_FAINT as a box, GRID behind
+is actually used (INK as text/spine/tick, INK_FAINT as a swatch, GRID behind
 data, CANVAS as show-through, CYCLE as lines + bars, sizes as real specimens,
 widths as real strokes). It does NOT apply the yusina style, so what you see
 is the source record, not a generated sheet.
@@ -22,6 +22,8 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.patches import Rectangle
 
 from yusina import tokens as t
+
+REG = t.REGISTERS[t.DEFAULT_REGISTER]
 
 # use the token font for specimens, nothing else
 plt.rcParams.update({"font.family": t.FONT_FAMILY, "font.sans-serif": t.SANS})
@@ -42,8 +44,8 @@ def panel_core_colours(ax):
     _blank(ax, "core colours  ·  role")
     rows = [
         (t.INK, "INK", "text · spines · ticks · default line & marker"),
-        (t.INK_FAINT, "INK_FAINT", "boxplot boxes · whiskers · caps · flier edges"),
-        (t.GRID, "GRID", f"grid lines (drawn at alpha {t.GRID_ALPHA})"),
+        (t.INK_FAINT, "INK_FAINT", "unused by rc; boxplots stroke outline(fill)"),
+        (t.GRID, "GRID", f"grid lines (drawn at alpha {REG['grid_alpha']})"),
         (t.CANVAS, "CANVAS", "axes + figure + saved-file background (transparent)"),
     ]
     x0, w = 0.02, 0.11
@@ -55,10 +57,10 @@ def panel_core_colours(ax):
                                    edgecolor=t.INK, lw=0.6))
             for gx in np.linspace(x0 + 0.012, x0 + w - 0.012, 6):
                 ax.plot([gx, gx], [y - 0.32, y + 0.32], color=col, lw=0.6,
-                        alpha=t.GRID_ALPHA)
+                        alpha=REG["grid_alpha"])
             for gy in np.linspace(y - 0.22, y + 0.22, 3):
                 ax.plot([x0 + 0.005, x0 + w - 0.005], [gy, gy], color=col, lw=0.6,
-                        alpha=t.GRID_ALPHA)
+                        alpha=REG["grid_alpha"])
         elif name == "CANVAS":  # show-through: checkerboard
             for cx in range(10):
                 for cy in range(6):
@@ -111,7 +113,7 @@ def panel_typography(ax):
     _blank(ax, f"typography  ·  {', '.join(t.SANS)}")
     pt = t.FONT_PT
     rows = [("body / tick base", pt, t.WEIGHT)]
-    rows += [(name, pt * mult, t.TITLE_WEIGHT if "title" in name else t.WEIGHT)
+    rows += [(name, pt * mult, REG["title_weight"] if "title" in name else t.WEIGHT)
              for name, mult in t.FONT_SCALE.items()]
     ax.set_ylim(0, len(rows))
     for i, (name, size, weight) in enumerate(reversed(rows)):
@@ -143,7 +145,7 @@ def panel_geometry(ax):
         ("marker size", f"{t.MARKER_PT:g} pt · small (fliers/means) {t.MARKER_PT_SMALL:g} pt"),
         ("errorbar cap", f"{t.ERRORBAR_CAPSIZE:g} pt"),
         ("pads", " · ".join(f"{k} {v:g}" for k, v in t.PAD.items())),
-        ("grid alpha", f"{t.GRID_ALPHA}"),
+        ("grid alpha", f"{REG['grid_alpha']}"),
         ("figsize", f"{t.FIGSIZE[0]:g} x {t.FIGSIZE[1]:g} in"),
         ("dpi", f"screen {t.DPI_SCREEN} · save {t.DPI_SAVE}"),
         ("contexts", " · ".join(f"{k}={v:g}" for k, v in t.CONTEXTS.items())),

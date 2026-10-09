@@ -11,13 +11,16 @@ size.
 
 from __future__ import annotations
 
+from typing import TypedDict
+
 from yusina.colours import colourDict
+from yusina.palettes import get as palette
 
 # ---------------------------------------------------------------- colour ----
 INK = "#606060"          # every foreground mark: text, axis labels, tick
                          # labels, tick marks, spines, default line/marker
-INK_FAINT = "#6060604D"  # INK at ~30% alpha: boxplot boxes, whiskers, caps,
-                         # means, flier edges
+INK_FAINT = "#6060604D"  # INK at ~30% alpha; no rc uses it (boxplot strokes
+                         # are outline(fill)); kept for callers
 GRID = "#606060"         # grid lines (drawn at GRID_ALPHA, so effectively faint)
 CANVAS = "#FFFFFF00"     # transparent: axes background, figure background,
                          # saved-file background
@@ -27,10 +30,48 @@ CYCLE = list(colourDict["discrete"].values())
 CMAP = "Greys"           # default image / heatmap colormap (seaborn convention)
 
 # ------------------------------------------------------------- typography ----
+# A *register* is the taste axis, orthogonal to the size axis (CONTEXTS):
+# font stack, colour cycle, title weight, spine width, grid alpha, mathtext
+# font. Only the "biosynfoni" register uses Montserrat and the pastel cycle.
+class Register(TypedDict):
+    unicode_minus: bool
+    cycle: list[str]
+    sans: list[str]
+    title_weight: str
+    spine_lw: float
+    grid_alpha: float
+    mathtext: str
+
+
+REGISTERS: dict[str, Register] = {
+    "clean": {
+        "unicode_minus": True,
+        "cycle": palette("Carto Vivid"),   # author order
+        # PT Sans (.ttc) draws nothing below ~18 px in Agg (tick labels at 150 dpi);
+        # Open Sans is a variable font, matplotlib registers only weight 400, so
+        # bold titles need the static Open Sans weights installed
+        "sans": ["Open Sans", "Avenir Next", "Helvetica Neue", "DejaVu Sans"],
+        "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.25, "mathtext": "dejavusans"},
+    "formal": {
+        "unicode_minus": True,
+        "cycle": palette("seaborn colorblind"),  # journal figures
+        "sans": ["Helvetica Neue", "Helvetica", "Avenir Next", "DejaVu Sans"],
+        "title_weight": "regular", "spine_lw": 0.5, "grid_alpha": 0.0, "mathtext": "dejavusans"},
+    "latex": {
+        "unicode_minus": False,
+        "cycle": palette("Tol vibrant"),   # already blue-then-orange; matches Computer Modern body text; usetex later
+        "sans": ["CMU Sans Serif", "CMU Bright", "DejaVu Sans"],
+        "title_weight": "bold", "spine_lw": 0.5, "grid_alpha": 0.0, "mathtext": "cm"},
+    "biosynfoni": {
+        "unicode_minus": True,
+        "cycle": CYCLE,                # the biosynfoni paper look
+        "sans": ["Montserrat", "Helvetica Neue", "DejaVu Sans"],
+        "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.25, "mathtext": "dejavusans"},
+}
+DEFAULT_REGISTER = "clean"
 FONT_FAMILY = "sans-serif"
-SANS = ["Montserrat", "Helvetica", "DejaVu Sans"]
+SANS = REGISTERS[DEFAULT_REGISTER]["sans"]
 WEIGHT = "regular"       # body text, axis labels, tick labels
-TITLE_WEIGHT = "bold"    # axes titles, figure suptitle
 
 FONT_PT = 10.0           # reference size (font.size) at scale 1.0
 # every other text size is a multiple of FONT_PT, so changing FONT_PT -- or
@@ -54,16 +95,14 @@ LINEWIDTH = {
     "grid": 0.5,
     "patch": 0.0,          # filled patches (bars, wedges) draw with no edge
     "hatch": 0.5,          # hatch line weight (independent of patch edge)
-    "axes": 0.0,           # spine width (0 == biostylefoni look)
     "tick_major": 0.5,
     "tick_minor": 0.4,
-    "box": 0.5,            # every boxplot sub-element
+    "box": 1.0,            # every boxplot sub-element: never thin
 }
 TICK_LEN = {"major": 2.0, "minor": 1.0}
-MARKER_PT = 2.0           # lines.markersize
-MARKER_PT_SMALL = 1.0     # boxplot fliers / mean markers
+MARKER_PT = 4.0           # lines.markersize; scatter s = MARKER_PT**2 (one rc drives both)
+MARKER_PT_SMALL = 3.0     # boxplot fliers / mean markers
 ERRORBAR_CAPSIZE = 3.0
-GRID_ALPHA = 0.25
 
 PAD = {                   # points at scale 1.0
     "axes_title": 10.0,

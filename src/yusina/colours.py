@@ -30,25 +30,13 @@ colourDict = {
 }
 
 
-# WIP
 
-# import matplotlib.pyplot as plt
-# import matplotlib.colors as mcolors
+def outline(colour, lightness: float = 0.75, saturation: float = 1.3) -> str:
+    """Edge colour for a fill: same hue, darker and more saturated. Hex string
+    so ``generate`` quotes it in the .mplstyle."""
+    import colorsys
 
-# # Define the color palette
-# discrete_palette = list(colourDict["discrete"].values())
+    from matplotlib.colors import to_hex, to_rgb
 
-# # Create a color map
-# continuous_cmap = mcolors.LinearSegmentedColormap.from_list(
-#     "continuous", list(colourDict["continuous"].values())
-# )
-
-# # Example usage
-# x = [1, 2, 3, 4, 5]
-# y = [1, 4, 9, 16, 25]
-
-# # Plot using the color palette and colormap
-# fig, ax = plt.subplots()
-# ax.scatter(x, y, c=x, cmap=continuous_cmap)
-# ax.set_prop_cycle('color', discrete_palette)
-# plt.show()
+    h, l, s = colorsys.rgb_to_hls(*to_rgb(colour))
+    return to_hex(colorsys.hls_to_rgb(h, l * lightness, min(1.0, s * saturation)))

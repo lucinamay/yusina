@@ -13,15 +13,20 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Mapping
+from itertools import pairwise
 from pathlib import Path
+from typing import Any, overload
 
 import matplotlib as mpl
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import polars as pl
 from matplotlib.tri import Triangulation
 
 from yusina import tokens as t
+from yusina.colours import outline
 
 
 # ------------------------------------------------------------------ saving ----
@@ -43,14 +48,14 @@ def savefig(fig, filename, dpi: float = t.DPI_SAVE) -> None:
 def custom_cmap(cmap, first_color: bool = False, last_color: bool = False):
     """Copy *cmap* (name or object) with its first and/or last entry made
     transparent -- useful to drop a "zero" bin out of an image."""
-    if not isinstance(cmap, mpl.colors.Colormap):
+    if not isinstance(cmap, mcolors.Colormap):
         cmap = mpl.colormaps[cmap]
     colors = [cmap(i) for i in range(cmap.N)]
     if first_color:
         colors[0] = (0.95, 0.95, 0.95, 0.0)
     if last_color:
         colors[-1] = (1.0, 1.0, 0.95, 0.0)
-    return mpl.colors.LinearSegmentedColormap.from_list(
+    return mcolors.LinearSegmentedColormap.from_list(
         f"{cmap.name}_custom", colors, cmap.N
     )
 
@@ -65,7 +70,7 @@ def filtered_colormap(
     rgb = plt.get_cmap(cmap, n_colors)(np.linspace(0, 1, n_colors))[:, :3]
     lum = rgb @ np.array([0.299, 0.587, 0.114])
     keep = rgb[(lum >= min_brightness) & (lum <= max_brightness)]
-    return mpl.colors.ListedColormap(keep, name=f"{name}_filtered")
+    return mcolors.ListedColormap(keep, name=f"{name}_filtered")
 
 
 def two_gradient_cmap(low: str = "Greys", high: str = "Greens", name: str = "two_gradient"):
@@ -74,10 +79,16 @@ def two_gradient_cmap(low: str = "Greys", high: str = "Greens", name: str = "two
     n = 128
     lo = plt.get_cmap(low).resampled(n)(np.linspace(0.0, 0.4, n))
     hi = plt.get_cmap(high).resampled(n)(np.linspace(0.3, 1.0, n))
-    return mpl.colors.ListedColormap(np.vstack([lo, hi]), name=name)
+    return mcolors.ListedColormap(np.vstack([lo, hi]), name=name)
 
 
 # ------------------------------------------------------------------- text ----
+@overload
+def cleanfmt(text: str) -> str: ...
+@overload
+def cleanfmt(text: list | tuple) -> list: ...
+@overload
+def cleanfmt(text: Any) -> Any: ...
 def cleanfmt(text):
     """Lowercase and de-underscore a string, or each string in a list; anything
     else is returned unchanged."""
@@ -101,7 +112,7 @@ def _resolve_colors(keys, palette=None) -> list:
     if palette is None:
         cyc = plt.rcParams["axes.prop_cycle"].by_key().get("color", ["C0"])
         return [cyc[i % len(cyc)] for i in range(len(keys))]
-    if isinstance(palette, (str, mpl.colors.Colormap)):
+    if isinstance(palette, (str, mcolors.Colormap)):
         cmap = plt.get_cmap(palette)
         return [cmap(x) for x in np.linspace(0, 1, max(len(keys), 1))]
     palette = list(palette)
@@ -152,10 +163,10 @@ def annotate_heatmap(
     data = np.asarray(data)
 
     threshold = im.norm(threshold) if threshold is not None else im.norm(data.max()) / 2.0
-    kw = dict(horizontalalignment="center", verticalalignment="center")
+    kw = {"horizontalalignment": "center", "verticalalignment": "center"}
     kw.update(textkw)
     if isinstance(valfmt, str):
-        valfmt = mpl.ticker.StrMethodFormatter(valfmt)
+        valfmt = mticker.StrMethodFormatter(valfmt)
 
     texts = []
     for i in range(data.shape[0]):
@@ -210,7 +221,7 @@ def triheatmap(
     tris = _triangulation_for_triheatmap(upper.shape[1], upper.shape[0])
     cmaps = [colours[0], colours[1], colours[1], colours[0]]
     if normalise:
-        norms = [plt.Normalize(0, 100) for _ in range(4)]
+        norms = [mcolors.Normalize(0, 100) for _ in range(4)]
         imgs = [ax.tripcolor(tr, np.ravel(v), cmap=c, norm=n)
                 for tr, v, c, n in zip(tris, values, cmaps, norms)]
     else:
@@ -339,17 +350,17 @@ def scatter(df: pl.DataFrame, x: str, y: str, color_by: str | None = None,
 
 def _set_ax_boxplot_i_colour(bp: dict, i: int, colour, inner_alpha: float = 0.6) -> dict:
     """Recolour the i-th box (and its whiskers, caps, median, fliers) of a
-    ``patch_artist`` boxplot dict to *colour*."""
-    translucent = mpl.colors.to_rgba(colour, inner_alpha)
-    bp["boxes"][i].set_facecolor(translucent)
-    bp["boxes"][i].set_edgecolor(colour)
-    bp["medians"][i].set_color(colour)
-    bp["whiskers"][i * 2].set_color(colour)
-    bp["whiskers"][i * 2 + 1].set_color(colour)
-    bp["caps"][i * 2].set_color(colour)
-    bp["caps"][i * 2 + 1].set_color(colour)
-    if bp["fliers"]:
-        bp["fliers"][i].set_markeredgecolor(translucent)
+    ``patch_artist`` boxplot dict: *colour* fills, ``outline(colour)`` strokes."""
+    edge = outline(colour)
+    bp["boxes"][i].set_facecolor(mcolors.to_rgba(colour, inner_alpha))
+    bp["boxes"][i].set_edgecolor(edge)
+    bp["medians"][i].set_color(edge)
+    for j in (2 * i, 2 * i + 1):
+        bp["whiskers"][j].set_color(edge)
+        bp["caps"][j].set_color(edge)
+    for key in ("fliers", "means"):
+        if bp[key]:
+            bp[key][i].set(markerfacecolor=colour, markeredgecolor=edge)
     return bp
 
 
@@ -381,8 +392,8 @@ def scatter_boxplots(df: pl.DataFrame, x: str, y: str, color_by: str | None = No
     xs = [g.get_column(x).to_numpy() for _, g in groups]
     ys = [g.get_column(y).to_numpy() for _, g in groups]
     labels = [str(label) for label, _ in groups]
-    xbox = top.boxplot(xs, vert=False, patch_artist=True, tick_labels=labels)
-    ybox = right.boxplot(ys, vert=True, patch_artist=True, tick_labels=labels)
+    xbox = top.boxplot(xs, orientation="horizontal", patch_artist=True, tick_labels=labels)
+    ybox = right.boxplot(ys, orientation="vertical", patch_artist=True, tick_labels=labels)
 
     for i, label in enumerate(labels):
         ax.scatter(xs[i], ys[i], color=colors[i], label=label, alpha=0.6,
@@ -407,7 +418,7 @@ def scatter_3d(df: pl.DataFrame, x: str, y: str, z: str, marker: str = "o", ax=N
         ax = plt.figure().add_subplot(projection="3d")
     df = df.drop_nulls([x, y, z])
     ax.scatter(df.get_column(x).to_numpy(), df.get_column(y).to_numpy(),
-               df.get_column(z).to_numpy(), marker=marker)
+               df.get_column(z).to_numpy(), marker=marker)  # pyright: ignore[reportArgumentType]  # zs untyped upstream
     ax.set_xlabel(cleanfmt(x))
     ax.set_ylabel(cleanfmt(y))
     ax.set_zlabel(cleanfmt(z))
@@ -417,7 +428,7 @@ def scatter_3d(df: pl.DataFrame, x: str, y: str, z: str, marker: str = "o", ax=N
 # ------------------------------------------------------------------ sankey ----
 def _rgba(color, alpha: float) -> str:
     """matplotlib colour -> ``"rgba(r,g,b,a)"`` string for plotly."""
-    r, g, b = mpl.colors.to_rgb(color)
+    r, g, b = mcolors.to_rgb(color)
     return f"rgba({int(r * 255)},{int(g * 255)},{int(b * 255)},{alpha})"
 
 
@@ -459,11 +470,11 @@ def sankey(df: pl.DataFrame, columns, palette=None, link_alpha: float = 0.3,
     for col in columns:
         vals = [v for c, v in node_keys if c == col]
         for val, color in zip(vals, _resolve_colors(vals, palette)):
-            node_colors[(col, val)] = mpl.colors.to_hex(color)
+            node_colors[(col, val)] = mcolors.to_hex(color)
     node_color_list = [node_colors[key] for key in node_keys]
 
     src, tgt, value, link_color = [], [], [], []
-    for a, b in zip(columns, columns[1:]):
+    for a, b in pairwise(columns):
         grouped = df.group_by(a, b).len().sort("len", descending=True)
         for row_a, row_b, n in grouped.iter_rows():
             s = index[(a, row_a)]
@@ -474,9 +485,9 @@ def sankey(df: pl.DataFrame, columns, palette=None, link_alpha: float = 0.3,
 
     fig = go.Figure(
         go.Sankey(
-            node=dict(pad=pad, thickness=thickness, label=labels,
-                      color=node_color_list, line=dict(width=0)),
-            link=dict(source=src, target=tgt, value=value, color=link_color),
+            node={"pad": pad, "thickness": thickness, "label": labels,
+                      "color": node_color_list, "line": {"width": 0}},
+            link={"source": src, "target": tgt, "value": value, "color": link_color},
         )
     )
 
@@ -504,8 +515,8 @@ def _set_label_colors(ticklabels, colors) -> None:
         plt.setp(
             label,
             backgroundcolor=color,
-            bbox=dict(facecolor=color, alpha=0.5,
-                      boxstyle="round, rounding_size=0.7", edgecolor="none"),
+            bbox={"facecolor": color, "alpha": 0.5,
+                      "boxstyle": "round, rounding_size=0.7", "edgecolor": "none"},
         )
 
 

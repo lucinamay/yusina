@@ -37,21 +37,30 @@ def test_context_names_resolve():
     assert abs(mpl.rcParams["axes.titlesize"] - 13.5 * t.CONTEXTS["poster"]) < 1e-9
 
 
+def test_registers_change_taste_not_size():
+    for r in t.REGISTERS:
+        rc = build_rc(1.0, r)
+        assert rc["font.size"] == 10.0
+        assert rc["font.sans-serif"] == t.REGISTERS[r]["sans"]
+        assert "Arial" not in rc["font.sans-serif"]
+    assert build_rc(1.0, "formal")["axes.grid"] is False
+    assert "Montserrat" not in build_rc(1.0, "clean")["font.sans-serif"]
+
+
 def test_palette_is_valid_hex():
     for c in (t.INK, t.INK_FAINT, t.GRID, t.CANVAS, *t.CYCLE):
         assert HEX.match(c), c
 
 
 def test_generated_file_loads():
-    path = write_mplstyle(Path(__file__).parent / "_generated.mplstyle")
+    path = write_mplstyle(path=Path(__file__).parent / "_generated.mplstyle")
     try:
         with mpl.rc_context(fname=path):
             assert mpl.rcParams["font.size"] == 10.0
             assert mpl.rcParams["axes.grid"] is True
             assert mpl.rcParams["text.color"] == "#606060"       # quoted hex
-            assert mpl.rcParams["axes.prop_cycle"].by_key()["color"][0] in (
-                "#B9C311", "B9C311",
-            )
+            first = t.REGISTERS[t.DEFAULT_REGISTER]["cycle"][0]
+            assert mpl.rcParams["axes.prop_cycle"].by_key()["color"][0].lstrip("#") == first.lstrip("#")
     finally:
         path.unlink()
 
