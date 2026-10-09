@@ -1,0 +1,75 @@
+{
+ "layout": {
+  "colorway": [
+   "#EE7733",
+   "#0077BB",
+   "#33BBEE",
+   "#EE3377",
+   "#CC3311",
+   "#009988",
+   "#BBBBBB"
+  ],
+  "font": {
+   "color": "#606060",
+   "family": "CMU Sans Serif, CMU Bright, DejaVu Sans",
+   "size": 10.0
+  },
+  "legend": {
+   "bgcolor": "rgba(0,0,0,0)",
+   "borderwidth": 0,
+   "font": {
+    "size": 10.0
+   }
+  },
+  "paper_bgcolor": "rgba(0,0,0,0)",
+  "plot_bgcolor": "rgba(0,0,0,0)",
+  "title": {
+   "font": {
+    "size": 13.5,
+    "weight": "bold"
+   }
+  },
+  "xaxis": {
+   "gridcolor": "rgba(96,96,96,0.0)",
+   "gridwidth": 0.5,
+   "linecolor": "#606060",
+   "linewidth": 0.5,
+   "showgrid": false,
+   "showline": true,
+   "tickcolor": "#606060",
+   "tickfont": {
+    "size": 7.199999999999999
+   },
+   "ticklen": 2.0,
+   "ticks": "outside",
+   "tickwidth": 0.5,
+   "title": {
+    "font": {
+     "size": 12.5
+    }
+   },
+   "zeroline": false
+  },
+  "yaxis": {
+   "gridcolor": "rgba(96,96,96,0.0)",
+   "gridwidth": 0.5,
+   "linecolor": "#606060",
+   "linewidth": 0.5,
+   "showgrid": false,
+   "showline": true,
+   "tickcolor": "#606060",
+   "tickfont": {
+    "size": 7.199999999999999
+   },
+   "ticklen": 2.0,
+   "ticks": "outside",
+   "tickwidth": 0.5,
+   "title": {
+    "font": {
+     "size": 12.5
+    }
+   },
+   "zeroline": false
+  }
+ }
+}

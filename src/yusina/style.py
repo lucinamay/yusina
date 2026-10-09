@@ -9,7 +9,7 @@ import matplotlib as mpl
 from yusina import tokens as t
 from yusina._rcparams import build_rc
 
-MPLSTYLE = Path(__file__).parent / f"yusina-{t.DEFAULT_REGISTER}.mplstyle"  # for `plt.style.use(MPLSTYLE)`
+MPLSTYLE = Path(__file__).parent / "data" / f"yusina-{t.DEFAULT_REGISTER}.mplstyle"  # for `plt.style.use(MPLSTYLE)`
 
 
 def set_style(scale: float | str = 1.0, register: str = t.DEFAULT_REGISTER) -> None:

@@ -25,6 +25,8 @@ from yusina import set_style
 from yusina import tokens as t
 from yusina.figures import _set_ax_boxplot_i_colour
 
+GALLERY = Path(__file__).resolve().parent.parent / "gallery"
+
 rng = np.random.default_rng(0)
 
 
@@ -125,6 +127,6 @@ if __name__ == "__main__":
     register = next((a for a in args if a in t.REGISTERS), t.DEFAULT_REGISTER)
     args = [a for a in args if a != register]
     scale = _arg_scale(args[0]) if args else "notebook"
-    out = Path(args[1]) if len(args) > 1 else Path(f"gallery_{register}.png")
+    out = Path(args[1]) if len(args) > 1 else GALLERY / f"gallery_{register}.png"
     build(scale, register).savefig(out, dpi=150)
     print("wrote", out)

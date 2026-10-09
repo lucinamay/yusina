@@ -23,6 +23,8 @@ from matplotlib.patches import Rectangle
 
 from yusina import tokens as t
 
+GALLERY = Path(__file__).resolve().parent.parent / "gallery"
+
 REG = t.REGISTERS[t.DEFAULT_REGISTER]
 
 # use the token font for specimens, nothing else
@@ -175,7 +177,7 @@ def build():
 
 
 if __name__ == "__main__":
-    out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("moodboard.png")
+    out = Path(sys.argv[1]) if len(sys.argv) > 1 else GALLERY / "moodboard.png"
     fig = build()
     fig.savefig(out, dpi=150, bbox_inches="tight", facecolor="white")
     print("wrote", out)

@@ -1,8 +1,9 @@
 """Render the ``yusina.palettes`` catalogue, one sheet per hue scheme ([pick] = maintainer favourite).
 
-    python scripts/readymade.py          # writes catalogue_<scheme>.png
+    python scripts/readymade.py          # writes gallery/catalogue_<scheme>.png
 """
 import sys
+from pathlib import Path
 
 sys.path.insert(0, "src")
 import matplotlib
@@ -15,6 +16,8 @@ from matplotlib.patches import Rectangle
 
 from yusina import palettes as P
 from yusina import set_style
+
+GALLERY = Path(__file__).resolve().parent.parent / "gallery"
 
 
 def luma(c):
@@ -47,4 +50,4 @@ if __name__ == "__main__":
     for sch, names in P.by_scheme().items():
         if not names: continue
         pals = {("[pick] " if P.PALETTES[n]["pick"] else "") + n + (f"  — {P.PALETTES[n]['note']}" if P.PALETTES[n]["note"] else ""): P.PALETTES[n]["colours"] for n in names}
-        sheet(pals, f"catalogue_{sch}.png", ncol=1 if len(pals) <= 12 else 2)
+        sheet(pals, GALLERY / f"catalogue_{sch}.png", ncol=1 if len(pals) <= 12 else 2)

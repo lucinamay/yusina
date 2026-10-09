@@ -29,7 +29,7 @@ class Palette(TypedDict):
     note: str
 
 
-HERE = Path(__file__).parent
+DATA = Path(__file__).parent / "data"
 
 
 def _load(path: Path) -> dict[str, Palette]:
@@ -38,7 +38,7 @@ def _load(path: Path) -> dict[str, Palette]:
                                pick=r["pick"], note=r["note"]) for r in df.iter_rows(named=True)}
 
 
-PALETTES: dict[str, Palette] = _load(HERE / "palettes.csv")
+PALETTES: dict[str, Palette] = _load(DATA / "palettes.csv")
 
 SCHEMES = ("monochromatic", "analogous", "complementary", "split-complementary", "triadic", "tetradic", "polychromatic", "achromatic")
 
@@ -252,7 +252,7 @@ def database() -> dict[str, dict]:
 PACKED = ("hue_names", "schemes_by_n")  # list / dict tags, space-separated in the csv
 
 
-def load_tags(path: Path = HERE / "palette_tags.csv") -> dict[str, dict]:
+def load_tags(path: Path = DATA / "palette_tags.csv") -> dict[str, dict]:
     """{name: base fields + computed tags} from the generated ``palette_tags.csv``."""
     out = {}
     for r in pl.read_csv(path).iter_rows(named=True):

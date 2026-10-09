@@ -12,6 +12,8 @@ from matplotlib.patches import Rectangle
 
 from yusina import palettes as P
 
+GALLERY = Path(__file__).resolve().parent.parent / "gallery"
+
 ABBR = {"monochromatic": "mono", "analogous": "ana", "complementary": "comp", "triadic": "tri", "tetradic": "tetra",
             "polychromatic": "poly", "achromatic": "achro"}
 ABBR["split-complementary"] = "split"
@@ -35,7 +37,7 @@ COLS = [  # (header, x offset in colour-cell units, formatter)
 ]
 
 if __name__ == "__main__":
-    out = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("palette_overview.png")
+    out = Path(sys.argv[1]) if len(sys.argv) > 1 else GALLERY / "palette_overview.png"
     db = sorted(P.load_tags().items(), key=lambda kv: (kv[1]["mood"], -kv[1]["contrast"]))
     sw = 16  # swatch strip width in cells
     fig, ax = plt.subplots(figsize=(24, 0.28 * len(db) + 1))

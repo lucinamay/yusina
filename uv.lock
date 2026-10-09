@@ -2774,6 +2774,7 @@ dev = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
     { name = "numpy", version = "2.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "plotnine" },
     { name = "polars" },
 ]
 
@@ -2796,5 +2797,6 @@ provides-extras = ["plotly", "plotnine", "shade", "protein"]
 dev = [
     { name = "matplotlib", specifier = ">=3.9.4" },
     { name = "numpy", specifier = ">=2.0.2" },
+    { name = "plotnine", specifier = ">=0.13" },
     { name = "polars", specifier = ">=1.36.1" },
 ]

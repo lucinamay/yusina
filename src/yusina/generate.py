@@ -2,13 +2,14 @@
 
     python -m yusina.generate
 
-writes one ``yusina/yusina-<register>.mplstyle`` per ``tokens.REGISTERS`` entry
-and ``yusina/palette_tags.csv``. Other libraries (plotly, altair, ...) get
+writes to ``yusina/data/``: one ``yusina-<register>.mplstyle`` and ``.plotly.json`` per
+``tokens.REGISTERS`` entry, and ``palette_tags.csv``. Other libraries (plotly, altair, ...) get
 their own ``write_*`` here later, all fed from the same tokens.
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import matplotlib as mpl
@@ -19,7 +20,7 @@ from yusina import palettes
 from yusina import tokens as t
 from yusina._rcparams import build_rc
 
-HERE = Path(__file__).parent
+DATA = Path(__file__).parent / "data"
 
 
 def _scalar(v) -> str:
@@ -49,7 +50,7 @@ def write_mplstyle(register: str = t.DEFAULT_REGISTER, path: Path | str | None =
     Only keys the installed matplotlib recognises are written, so the file
     stays loadable across versions.
     """
-    path = Path(path or HERE / f"yusina-{register}.mplstyle")
+    path = Path(path or DATA / f"yusina-{register}.mplstyle")
     rc = build_rc(1.0, register)
     valid = set(mpl.rcParams)
     header = [
@@ -70,7 +71,7 @@ def write_mplstyle(register: str = t.DEFAULT_REGISTER, path: Path | str | None =
     return path
 
 
-def write_palette_tags(path: Path | str = HERE / "palette_tags.csv") -> Path:
+def write_palette_tags(path: Path | str = DATA / "palette_tags.csv") -> Path:
     """One row per palette, one column per computed tag (base fields stay in
     ``palettes.csv``); list / dict tags are space-separated strings."""
     rows = []
@@ -84,9 +85,19 @@ def write_palette_tags(path: Path | str = HERE / "palette_tags.csv") -> Path:
     return path
 
 
+def write_plotly_template(register: str = t.DEFAULT_REGISTER, path: Path | str | None = None) -> Path:
+    """Serialise ``backends.plotly_template(1.0, register)`` to ``yusina-<register>.plotly.json``."""
+    from yusina.backends import plotly_template
+
+    path = Path(path or DATA / f"yusina-{register}.plotly.json")
+    path.write_text(json.dumps(plotly_template(1.0, register).to_plotly_json(), indent=1))
+    return path
+
+
 def main() -> None:
     for register in t.REGISTERS:
         print("wrote", write_mplstyle(register))
+        print("wrote", write_plotly_template(register))
     print("wrote", write_palette_tags())
 
 

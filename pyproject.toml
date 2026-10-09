@@ -43,8 +43,9 @@ protein = ["py3Dmol>=2.0"]
 dev = [
     "matplotlib>=3.9.4",
     "numpy>=2.0.2",
+    "plotnine>=0.13",
     "polars>=1.36.1",
 ]
 
 [tool.setuptools.package-data]
-yusina = ["*.mplstyle", "*.csv"]
+yusina = ["data/*"]
