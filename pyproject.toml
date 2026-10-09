@@ -30,6 +30,12 @@ dependencies = [
     "polars>=1.0",
 ]
 
+[project.optional-dependencies]
+plotly = ["kaleido>=0.2"]
+plotnine = ["plotnine>=0.13"]
+shade = ["datashader>=0.16", "holoviews>=1.18", "hvplot>=0.10"]
+protein = ["py3Dmol>=2.0"]
+
 [project.urls]
 "homepage" = "https://github.com/lucinamay/yusina"
 

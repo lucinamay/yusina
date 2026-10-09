@@ -535,3 +535,15 @@ def _set_label_colors_from_categories(ticklabels, categories, col_dict: dict) ->
     """:func:`_set_label_colors` with the colours resolved from *categories*
     through *col_dict*."""
     _set_label_colors(ticklabels, _cat_to_colour(categories, col_dict))
+
+# ----------------------------------------------------------------- subplots ----
+def label_panels(fig, labels: str = "abcdefghijklmnopqrstuvwxyz", x: float = -0.1,
+                 y: float = 1.05, **text_kw) -> None:
+    """Bold lowercase panel letters at each axes' top-left (Nature convention)."""
+    raise NotImplementedError
+
+
+def paper_figure(width: str = "single", height_ratio: float = 0.62, **subplots_kw):
+    """``plt.subplots`` at journal column width: single 89 mm, double 183 mm,
+    with constrained layout. Pairs with ``set_style("paper")``."""
+    raise NotImplementedError
