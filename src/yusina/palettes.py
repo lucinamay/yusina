@@ -1,7 +1,7 @@
 """Catalogue of ready-made categorical palettes, grouped by hue scheme.
 
 ``palettes.csv`` (hand-edited, one row per palette) is the source: colours,
-source, cvd_safe, pick, note. ``pick`` marks the maintainer's favourites;
+source, cvd_safe, pick, note, and the taste tags lines / planes / nice_n. ``pick`` marks the maintainer's favourites;
 ``note`` records where a palette does or does not work. MetBrewer / PNWColors
 colours are in the authors' categorical order. ``scheme(name)`` classifies the
 palette by how its hues sit on the wheel so that, e.g., all complementary
@@ -27,15 +27,20 @@ class Palette(TypedDict):
     cvd_safe: bool
     pick: bool
     note: str
+    lines: bool | None   # hand-tagged: works for lines / markers; None = not reviewed
+    planes: bool | None  # hand-tagged: works for filled areas (bars, stacks, violins)
+    nice_n: int | None   # hand-tagged: number of series it is pleasant for
 
 
 DATA = Path(__file__).parent / "data"
 
 
 def _load(path: Path) -> dict[str, Palette]:
-    df = pl.read_csv(path, schema_overrides={"note": pl.String}).fill_null("")
+    df = pl.read_csv(path, schema_overrides={"note": pl.String, "lines": pl.Boolean, "planes": pl.Boolean,
+                                            "nice_n": pl.Int64}).with_columns(pl.col("note").fill_null(""))
     return {r["name"]: Palette(colours=r["colours"].split(), source=r["source"], cvd_safe=r["cvd_safe"],
-                               pick=r["pick"], note=r["note"]) for r in df.iter_rows(named=True)}
+                               pick=r["pick"], note=r["note"], lines=r["lines"], planes=r["planes"],
+                               nice_n=r["nice_n"]) for r in df.iter_rows(named=True)}
 
 
 PALETTES: dict[str, Palette] = _load(DATA / "palettes.csv")

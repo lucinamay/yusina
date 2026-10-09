@@ -43,6 +43,7 @@ protein = ["py3Dmol>=2.0"]
 dev = [
     "matplotlib>=3.9.4",
     "numpy>=2.0.2",
+    "kaleido>=1.0",
     "plotnine>=0.13",
     "polars>=1.36.1",
 ]

@@ -27,7 +27,8 @@ CANVAS = "#FFFFFF00"     # transparent: axes background, figure background,
 
 # categorical line / patch colour cycle -- the "discrete" palette from colours.py
 CYCLE = list(colourDict["discrete"].values())
-CMAP = "Greys"           # default image / heatmap colormap (seaborn convention)
+CMAP = "yusina"          # default image / heatmap colormap: biosynfoni's biosynthetic-distance
+                         # steps from white (YlGnBu with its yellow end turned white), registered by colours.py
 
 # ------------------------------------------------------------- typography ----
 # A *register* is the taste axis, orthogonal to the size axis (CONTEXTS):
@@ -35,6 +36,7 @@ CMAP = "Greys"           # default image / heatmap colormap (seaborn convention)
 # font. Only the "biosynfoni" register uses Montserrat and the pastel cycle.
 class Register(TypedDict):
     unicode_minus: bool
+    usetex: bool          # render all text with LaTeX (needs a TeX install)
     cycle: list[str]
     sans: list[str]
     title_weight: str
@@ -45,7 +47,7 @@ class Register(TypedDict):
 
 REGISTERS: dict[str, Register] = {
     "clean": {
-        "unicode_minus": True,
+        "unicode_minus": True, "usetex": False,
         "cycle": palette("Carto Vivid"),   # author order
         # PT Sans (.ttc) draws nothing below ~18 px in Agg (tick labels at 150 dpi);
         # Open Sans is a variable font, matplotlib registers only weight 400, so
@@ -53,17 +55,17 @@ REGISTERS: dict[str, Register] = {
         "sans": ["Open Sans", "Avenir Next", "Helvetica Neue", "DejaVu Sans"],
         "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.25, "mathtext": "dejavusans"},
     "formal": {
-        "unicode_minus": True,
+        "unicode_minus": True, "usetex": False,
         "cycle": palette("seaborn colorblind"),  # journal figures
         "sans": ["Helvetica Neue", "Helvetica", "Avenir Next", "DejaVu Sans"],
         "title_weight": "regular", "spine_lw": 0.5, "grid_alpha": 0.0, "mathtext": "dejavusans"},
     "latex": {
-        "unicode_minus": False,
-        "cycle": palette("Tol vibrant"),   # already blue-then-orange; matches Computer Modern body text; usetex later
+        "unicode_minus": False, "usetex": True,   # CMU fonts lack U+2212, mathtext ticks need it; LaTeX renders CM sans itself
+        "cycle": palette("Tol vibrant"),   # already blue-then-orange; matches Computer Modern body text
         "sans": ["CMU Sans Serif", "CMU Bright", "DejaVu Sans"],
         "title_weight": "bold", "spine_lw": 0.5, "grid_alpha": 0.0, "mathtext": "cm"},
     "biosynfoni": {
-        "unicode_minus": True,
+        "unicode_minus": True, "usetex": False,
         "cycle": CYCLE,                # the biosynfoni paper look
         "sans": ["Montserrat", "Helvetica Neue", "DejaVu Sans"],
         "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.25, "mathtext": "dejavusans"},

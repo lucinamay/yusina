@@ -104,7 +104,7 @@ hatch.color: "#606060"
 hatch.linewidth: 0.5
 
 image.aspect: equal
-image.cmap: Greys
+image.cmap: yusina
 image.composite_image: True
 image.interpolation: antialiased
 image.lut: 256
@@ -182,7 +182,7 @@ scatter.marker: o
 text.antialiased: True
 text.color: "#606060"
 text.hinting: force_autohint
-text.usetex: False
+text.usetex: True
 
 xtick.alignment: center
 xtick.bottom: True

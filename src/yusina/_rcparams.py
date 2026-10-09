@@ -105,7 +105,7 @@ def build_rc(scale: float = 1.0, register: str = t.DEFAULT_REGISTER) -> dict:
         "text.color": ink,
         "text.hinting": "force_autohint",
         "text.antialiased": True,
-        "text.usetex": False,
+        "text.usetex": reg["usetex"],
         "mathtext.default": "regular",
         "mathtext.fontset": reg["mathtext"],
         # ---- axes ----

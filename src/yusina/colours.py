@@ -31,6 +31,23 @@ colourDict = {
 
 
 
+def _register_cmap() -> None:
+    """``"yusina"``: white, then the biosynthetic-distance steps pale -> dark, as a
+    continuous map. YlGnBu with its yellow end replaced by white."""
+    import matplotlib as mpl
+    from matplotlib.colors import LinearSegmentedColormap
+
+    if "yusina" in mpl.colormaps:
+        return
+    steps = ["#FFFFFF"] + [colourDict["continuous"][k] for k in ("10", "4", "3", "2", "1")]
+    cmap = LinearSegmentedColormap.from_list("yusina", steps)
+    mpl.colormaps.register(cmap)
+    mpl.colormaps.register(cmap.reversed())
+
+
+_register_cmap()
+
+
 def outline(colour, lightness: float = 0.75, saturation: float = 1.3) -> str:
     """Edge colour for a fill: same hue, darker and more saturated. Hex string
     so ``generate`` quotes it in the .mplstyle."""
