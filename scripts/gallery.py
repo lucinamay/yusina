@@ -3,6 +3,7 @@
     python scripts/gallery.py [context|scale] [register] [family|all] [out.png]
     python scripts/gallery.py talk                 # 9-panel overview -> gallery/gallery_clean.png
     python scripts/gallery.py formal all           # one sheet per family -> gallery/<family>_formal.png
+    python scripts/gallery.py scales [register]    # one panel at every context -> gallery/scales_<register>.png
     python scripts/gallery.py 1.25 formal gallery_big.png
 
 Applies set_style(), then draws one panel per plot family so a change in
@@ -272,6 +273,7 @@ def strip(ax):
         d = rng.normal(i * 0.5, 1, 60)
         ax.scatter(rng.normal(i, 0.08, len(d)), d, s=10, color=c, alpha=0.6, edgecolors="none")
         ax.plot([i - 0.25, i + 0.25], [d.mean()] * 2, color=outline(c), lw=2)
+    ax.xaxis.grid(False)
     ax.set(title="strip + mean", xticks=range(5), xticklabels=list("abcde"), ylabel="value")
 
 
@@ -451,9 +453,7 @@ def polar_radar(ax):
 def inset(ax):
     x = np.linspace(0, 10, 400); y = np.sin(x) + 0.05 * np.sin(40 * x)
     ax.plot(x, y, color=_cycle()[0])
-    ins = ax.inset_axes((0.55, 0.55, 0.4, 0.4), xlim=(2, 2.6), ylim=(0.5, 1.0))
-    ins.plot(x, y, color=_cycle()[0]); ins.set_xticks([]); ins.set_yticks([])
-    ax.indicate_inset_zoom(ins, edgecolor=t.INK)
+    figures.inset_zoom(ax, (2, 2.6), (0.5, 1.0)).plot(x, y, color=_cycle()[0])
     ax.set(title="inset zoom", xlabel="x", ylabel="y")
 
 
@@ -461,23 +461,16 @@ def broken_log(ax):
     f = np.logspace(0, 4, 500)
     s = 1 / (1 + (f / 50) ** 2) + 0.3 / (1 + ((f - 2000) / 100) ** 2) + 0.01 * rng.random(500)
     ax.semilogx(f, s, color=_cycle()[0])
-    for fx, label in ((50, "corner"), (2000, "peak")):
-        ax.annotate(label, (fx, np.interp(fx, f, s)), xytext=(0, 18), textcoords="offset points", ha="center",
-                    arrowprops={"arrowstyle": "-", "color": t.INK, "lw": 0.6})
     ax.minorticks_on()
+    figures.callouts(ax, {"corner": (50, np.interp(50, f, s)), "peak": (2000, np.interp(2000, f, s))})
     ax.set(title="semilogx spectrum + annotations", xlabel="frequency (Hz)", ylabel="power")
 
 
 def table_panel(ax):
-    rows = [["model A", "0.91", "0.88"], ["model B", "0.87", "0.90"], ["model C", "0.80", "0.79"]]
-    tb = ax.table(cellText=rows, colLabels=["", "AUC", "F1"], loc="center", cellLoc="center")
-    tb.auto_set_font_size(False); tb.set_fontsize(plt.rcParams["font.size"])
-    tb.scale(1, 1.4)
-    for (r, c), cell in tb.get_celld().items():
-        cell.set_edgecolor(t.GRID); cell.set_linewidth(0.5)
-        if r == 0:
-            cell.set_text_props(weight=plt.rcParams["axes.titleweight"])
-    ax.axis("off"); ax.set(title="table in the style")
+    import polars as pl
+    df = pl.DataFrame({"model": ["A", "B", "C"], "AUC": [0.91, 0.87, 0.80], "F1": [0.88, 0.90, 0.79]})
+    figures.table(ax, df, index="model")
+    ax.set(title="table in the style")
 
 
 # --------------------------------------------- figure-level helpers ----
@@ -555,7 +548,7 @@ def _grid(panels, ncols=4, w=4.3, h=3.5):
     return fig
 
 
-def sheet_family(family: str, scale: float | str = "notebook", register: str = t.DEFAULT_REGISTER):
+def sheet_family(family: str, scale: float | str = t.DEFAULT_CONTEXT, register: str = t.DEFAULT_REGISTER):
     """One sheet: every panel of *family* in one register."""
     set_style(scale, register); _REGISTER[0] = register
     fig = _grid(FAMILIES[family])
@@ -564,13 +557,25 @@ def sheet_family(family: str, scale: float | str = "notebook", register: str = t
     return fig
 
 
-def sheet_registers(panel, scale: float | str = "notebook"):
+def sheet_registers(panel, scale: float | str = t.DEFAULT_CONTEXT):
     """One row per register for a single panel: how the same plot changes with taste."""
     fig = plt.figure(figsize=(4.3 * len(t.REGISTERS), 3.5))
     for i, register in enumerate(t.REGISTERS, 1):
         set_style(scale, register); _REGISTER[0] = register
         ax = fig.add_subplot(1, len(t.REGISTERS), i, projection=PROJECTION.get(panel))
         panel(ax); ax.set_title(f"{register}: {ax.get_title()}")
+    fig.tight_layout()
+    return fig
+
+
+def sheet_scales(panel, register: str = t.DEFAULT_REGISTER):
+    """One column per context for a single panel, same axes size: how the type and lines scale."""
+    names = [c for c in t.CONTEXTS if c != "presentation"]
+    fig = plt.figure(figsize=(4.3 * len(names), 3.5))
+    for i, context in enumerate(names, 1):
+        set_style(context, register); _REGISTER[0] = register
+        ax = fig.add_subplot(1, len(names), i, projection=PROJECTION.get(panel))
+        panel(ax); ax.set_title(f"{context} ({t.CONTEXTS[context]}): {ax.get_title()}")
     fig.tight_layout()
     return fig
 
@@ -588,8 +593,12 @@ if __name__ == "__main__":
     register = next((a for a in args if a in t.REGISTERS), t.DEFAULT_REGISTER)
     family = next((a for a in args if a in FAMILIES or a == "all"), None)
     args = [a for a in args if a not in (register, family)]
-    scale = _arg_scale(args[0]) if args else "notebook"
-    if family:
+    scale = _arg_scale(args[0]) if args and args[0] != "scales" else t.DEFAULT_CONTEXT
+    if "scales" in args:
+        out = GALLERY / f"scales_{register}.png"
+        sheet_scales(lines, register).savefig(out, dpi=120)
+        print("wrote", out)
+    elif family:
         for fam in FAMILIES if family == "all" else [family]:
             out = GALLERY / f"{fam}_{register}.png"
             sheet_family(fam, scale, register).savefig(out, dpi=120); plt.close("all")

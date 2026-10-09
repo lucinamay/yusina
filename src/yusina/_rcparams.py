@@ -110,7 +110,7 @@ def build_rc(scale: float = 1.0, register: str = t.DEFAULT_REGISTER) -> dict:
         "mathtext.fontset": reg["mathtext"],
         # ---- axes ----
         "axes.facecolor": t.CANVAS,
-        "axes.edgecolor": ink,
+        "axes.edgecolor": t.RULE,
         "axes.linewidth": reg["spine_lw"] * scale,
         "axes.grid": reg["grid_alpha"] > 0,
         "axes.grid.axis": "both",
@@ -209,7 +209,7 @@ def build_rc(scale: float = 1.0, register: str = t.DEFAULT_REGISTER) -> dict:
 
     for xy in ("xtick", "ytick"):
         rc.update({
-            f"{xy}.color": ink,
+            f"{xy}.color": t.RULE,
             f"{xy}.labelcolor": ink,
             f"{xy}.labelsize": fs["tick_label"],
             f"{xy}.direction": "out",

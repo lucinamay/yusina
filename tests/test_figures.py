@@ -7,6 +7,7 @@ right artifact type. Also checks the two bits of real logic --
 
 import sys
 from pathlib import Path
+from typing import cast
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
@@ -18,6 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import plotly.graph_objects as go
 import polars as pl
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 
@@ -91,6 +93,22 @@ def test_triheatmap():
     up, lo = np.random.rand(3, 4) * 100, np.random.rand(3, 4) * 100
     imgs, _cbar = f.triheatmap(up, lo, col_labels=list("wxyz"), normalise=True)
     assert len(imgs) == 4
+    plt.close("all")
+
+
+def test_inset_callouts_table():
+    _, ax = plt.subplots()
+    ax.semilogx([1, 10, 100], [0, 1, 0])
+    f.inset_zoom(ax, (1, 10), (0, 1), bounds=(0.5, 0.5, 0.4, 0.4))
+    canvas = cast(FigureCanvasAgg, ax.figure.canvas)
+    canvas.draw()
+    img = np.asarray(canvas.buffer_rgba())
+    x, y = ax.transData.transform((10 ** 1.25, 0.75))  # on the parent line, under the inset
+    assert (img[img.shape[0] - int(y), int(x)] == img[0, 0]).all()  # erased to background
+    assert len(f.callouts(ax, {"up": (10, 1), "down": (100, 0)})) == 2
+    tb = f.table(ax, DF.head(2), index="a")
+    assert tb[0, 0].visible_edges == "TB" and tb[2, 0].visible_edges == "B"
+    assert tb[1, 0].get_text().get_fontweight() == "bold"
     plt.close("all")
 
 

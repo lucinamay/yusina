@@ -52,11 +52,35 @@ def test_palette_is_valid_hex():
         assert HEX.match(c), c
 
 
+def test_grid_defaults_patch():
+    import matplotlib.pyplot as plt
+    from matplotlib.axes import Axes
+
+    from yusina.style import set_style
+
+    def grid_on(ax, axis):
+        ax.figure.canvas.draw()
+        return getattr(ax, f"{axis}axis").get_major_ticks()[0].gridline.get_visible()
+
+    set_style("notebook", "clean")  # grid register
+    _, axs = plt.subplots(2, 2)
+    axs[0, 0].bar([0, 1], [1, 2]); axs[0, 1].barh([0, 1], [1, 2])
+    axs[1, 0].hist([1, 2, 2, 3], orientation="horizontal"); axs[1, 1].imshow([[0, 1], [1, 0]])
+    assert (grid_on(axs[0, 0], "x"), grid_on(axs[0, 0], "y")) == (False, True)
+    assert (grid_on(axs[0, 1], "x"), grid_on(axs[0, 1], "y")) == (True, False)
+    assert (grid_on(axs[1, 0], "x"), grid_on(axs[1, 0], "y")) == (True, False)
+    assert (grid_on(axs[1, 1], "x"), grid_on(axs[1, 1], "y")) == (False, False)
+    assert Axes.bar.__code__.co_filename.endswith("style.py")  # wrapped (matplotlib's own bar also has __wrapped__)
+    set_style(grid_defaults=False)
+    assert "matplotlib" in Axes.bar.__code__.co_filename.rsplit("yusina", 1)[-1]
+    plt.close("all")
+
+
 def test_generated_file_loads():
     path = write_mplstyle(path=Path(__file__).parent / "_generated.mplstyle")
     try:
         with mpl.rc_context(fname=path):
-            assert mpl.rcParams["font.size"] == 10.0
+            assert mpl.rcParams["font.size"] == t.FONT_PT * t.CONTEXTS[t.DEFAULT_CONTEXT]
             assert mpl.rcParams["axes.grid"] is True
             assert mpl.rcParams["text.color"] == "#606060"       # quoted hex
             first = t.REGISTERS[t.DEFAULT_REGISTER]["cycle"][0]

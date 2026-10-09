@@ -21,7 +21,9 @@ INK = "#606060"          # every foreground mark: text, axis labels, tick
                          # labels, tick marks, spines, default line/marker
 INK_FAINT = "#6060604D"  # INK at ~30% alpha; no rc uses it (boxplot strokes
                          # are outline(fill)); kept for callers
-GRID = "#606060"         # grid lines (drawn at GRID_ALPHA, so effectively faint)
+RULE = "#A8A8A8"         # structural lines: spines, ticks, grid, leaders, inset and
+                         # table rules -- lighter than INK and drawn thicker
+GRID = RULE              # grid lines (drawn at the register's grid_alpha)
 CANVAS = "#FFFFFF00"     # transparent: axes background, figure background,
                          # saved-file background
 
@@ -36,7 +38,7 @@ CMAP = "yusina"          # default image / heatmap colormap: biosynfoni's biosyn
 # font. Only the "biosynfoni" register uses Montserrat and the pastel cycle.
 class Register(TypedDict):
     unicode_minus: bool
-    usetex: bool          # render all text with LaTeX (needs a TeX install)
+    usetex: bool          # render all text with LaTeX; off everywhere: TeX ignores font weight, so no bold titles
     cycle: list[str]
     sans: list[str]
     title_weight: str
@@ -50,25 +52,25 @@ REGISTERS: dict[str, Register] = {
         "unicode_minus": True, "usetex": False,
         "cycle": palette("Carto Vivid"),   # author order
         # PT Sans (.ttc) draws nothing below ~18 px in Agg (tick labels at 150 dpi);
-        # Open Sans is a variable font, matplotlib registers only weight 400, so
-        # bold titles need the static Open Sans weights installed
+        # Open Sans needs the static weight files installed (the variable font
+        # registers as weight 400 only)
         "sans": ["Open Sans", "Avenir Next", "Helvetica Neue", "DejaVu Sans"],
-        "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.25, "mathtext": "dejavusans"},
+        "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.35, "mathtext": "dejavusans"},
     "formal": {
         "unicode_minus": True, "usetex": False,
         "cycle": palette("seaborn colorblind"),  # journal figures
         "sans": ["Helvetica Neue", "Helvetica", "Avenir Next", "DejaVu Sans"],
-        "title_weight": "regular", "spine_lw": 0.5, "grid_alpha": 0.0, "mathtext": "dejavusans"},
+        "title_weight": "regular", "spine_lw": 0.8, "grid_alpha": 0.0, "mathtext": "dejavusans"},
     "latex": {
-        "unicode_minus": False, "usetex": True,   # CMU fonts lack U+2212, mathtext ticks need it; LaTeX renders CM sans itself
+        "unicode_minus": False, "usetex": False,  # CMU fonts lack U+2212; CMU Sans Serif has a 700 face so bold works
         "cycle": palette("Tol vibrant"),   # already blue-then-orange; matches Computer Modern body text
         "sans": ["CMU Sans Serif", "CMU Bright", "DejaVu Sans"],
-        "title_weight": "bold", "spine_lw": 0.5, "grid_alpha": 0.0, "mathtext": "cm"},
+        "title_weight": "bold", "spine_lw": 0.8, "grid_alpha": 0.0, "mathtext": "cm"},
     "biosynfoni": {
         "unicode_minus": True, "usetex": False,
         "cycle": CYCLE,                # the biosynfoni paper look
         "sans": ["Montserrat", "Helvetica Neue", "DejaVu Sans"],
-        "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.25, "mathtext": "dejavusans"},
+        "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.35, "mathtext": "dejavusans"},
 }
 DEFAULT_REGISTER = "clean"
 FONT_FAMILY = "sans-serif"
@@ -94,12 +96,13 @@ FONT_SCALE = {
 # sizes so "context" scaling stays coherent
 LINEWIDTH = {
     "line": 1.5,           # lines.linewidth
-    "grid": 0.5,
+    "grid": 0.8,
     "patch": 0.0,          # filled patches (bars, wedges) draw with no edge
     "hatch": 0.5,          # hatch line weight (independent of patch edge)
-    "tick_major": 0.5,
-    "tick_minor": 0.4,
+    "tick_major": 0.8,
+    "tick_minor": 0.6,
     "box": 1.0,            # every boxplot sub-element: never thin
+    "leader": 1.5,         # callout leaders, inset frame + connectors (no rc; read by figures)
 }
 TICK_LEN = {"major": 2.0, "minor": 1.0}
 MARKER_PT = 4.0           # lines.markersize; scatter s = MARKER_PT**2 (one rc drives both)
@@ -120,6 +123,7 @@ DPI_SCREEN = 150         # figure.dpi -- on-screen / notebook inline.
 DPI_SAVE = 500           # savefig.dpi -- biostylefoni's export resolution
 
 # named plotting contexts -> scale factor passed to set_style
+DEFAULT_CONTEXT = "paper"
 CONTEXTS = {
     "paper": 0.8,
     "notebook": 1.0,

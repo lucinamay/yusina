@@ -3,6 +3,7 @@
     python scripts/readymade.py          # writes gallery/catalogue_<scheme>.png
 """
 import sys
+import textwrap
 from pathlib import Path
 
 sys.path.insert(0, "src")
@@ -29,7 +30,8 @@ def sheet(palettes, out):
     · stacked bars · stacked area (planes)."""
     set_style("notebook"); x = np.linspace(0, 10, 80); rng = np.random.default_rng(0)
     n = len(palettes); W = 10
-    fig, axs = plt.subplots(n, W, figsize=(19, 1.9 * n), squeeze=False, gridspec_kw={"width_ratios": [1.5] + [1] * 9})
+    extra = max(name.count("\n") for name in palettes)  # tight_layout pads every row for the tallest title
+    fig, axs = plt.subplots(n, W, figsize=(19, (1.9 + 0.16 * extra) * n), squeeze=False, gridspec_kw={"width_ratios": [1.5] + [1] * 9})
     for k, (name, pal) in enumerate(palettes.items()):
         sw, a2, a3, a4, bw, bar, sc, al, st, ar = axs[k]
         for i, c in enumerate(pal): sw.add_patch(Rectangle((i, 0.35), 1, 1, color=c)); sw.add_patch(Rectangle((i, 0), 1, 0.3, color=luma(c)))
@@ -53,5 +55,6 @@ def sheet(palettes, out):
 if __name__ == "__main__":
     for sch, names in P.by_scheme().items():
         if not names: continue
-        pals = {("[pick] " if P.PALETTES[n]["pick"] else "") + n + (f"  — {P.PALETTES[n]['note']}" if P.PALETTES[n]["note"] else ""): P.PALETTES[n]["colours"] for n in names}
+        # note wrapped under the name: a long title widens column 0 and tight_layout squeezes the rest
+        pals = {("[pick] " if P.PALETTES[n]["pick"] else "") + n + (f"\n{textwrap.fill(P.PALETTES[n]['note'], 36)}" if P.PALETTES[n]["note"] else ""): P.PALETTES[n]["colours"] for n in names}
         sheet(pals, GALLERY / f"catalogue_{sch}.png")

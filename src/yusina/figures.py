@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 import polars as pl
+from matplotlib.path import Path as MplPath
 from matplotlib.tri import Triangulation
 
 from yusina import tokens as t
@@ -147,6 +148,7 @@ def heatmap(data, row_labels, col_labels, ax=None, cbar_kw=None, cbarlabel="", *
     ax.spines[:].set_visible(False)
     ax.set_xticks(np.arange(data.shape[1] + 1) - 0.5, minor=True)
     ax.set_yticks(np.arange(data.shape[0] + 1) - 0.5, minor=True)
+    ax.grid(False)  # imshow draws at zorder 0, under the style grid (0.5)
     ax.grid(which="minor", color="w", linestyle="-", linewidth=1, alpha=1.0)
     ax.tick_params(which="minor", bottom=False, left=False)
     return im, cbar
@@ -244,12 +246,20 @@ def triheatmap(
     ax.set_xticks(np.arange(upper.shape[1] + 1) - 0.5, minor=True)
     ax.set_yticks(np.arange(upper.shape[0] + 1) - 0.5, minor=True)
     ax.set_aspect("equal", "box")
+    ax.grid(False)  # imshow draws at zorder 0, under the style grid (0.5)
     ax.grid(which="minor", color="w", linestyle="-", linewidth=1, alpha=1.0)
     ax.tick_params(which="minor", bottom=False, left=False)
     return imgs, cbar
 
 
 # --------------------------------------------------------------- bar plots ----
+def _luminance(colour) -> float:
+    """Relative (WCAG) luminance of *colour*; white = 1, black = 0."""
+    c = np.asarray(mcolors.to_rgb(colour))
+    lin = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
+    return float(lin @ [0.2126, 0.7152, 0.0722])
+
+
 def stacked_bar(categories, threshold: float = 0.0, ax=None, palette=None,
                 other_label: str = "Other"):
     """One vertical stacked bar showing the category mix of *categories*
@@ -285,8 +295,13 @@ def stacked_bar(categories, threshold: float = 0.0, ax=None, palette=None,
         share = count / total
         ax.bar(0, share, bottom=bottom, width=0.6, color=color, edgecolor="white")
         mid = bottom + share / 2
-        ax.text(0.4, mid, f"{cleanfmt(str(key)).capitalize()} ({share * 100:.1f}%)",
-                va="center", ha="left")
+        text_color = color
+        while _luminance(text_color) > 0.3:  # under 3:1 contrast on white: darken until readable
+            text_color = outline(text_color)
+        label = ax.text(0.4, mid, cleanfmt(str(key)).capitalize(),
+                        va="center", ha="left", color=text_color, weight="bold")
+        ax.annotate(f" ({share * 100:.1f}%)", (1, 0.5), xycoords=label,
+                    va="center", ha="left", color=text_color, weight="light")
         if share > 0.03:
             ax.text(0, mid, str(count), va="center", ha="center",
                     color="white", weight="bold")
@@ -547,3 +562,74 @@ def paper_figure(width: str = "single", height_ratio: float = 0.62, **subplots_k
     """``plt.subplots`` at journal column width: single 89 mm, double 183 mm,
     with constrained layout. Pairs with ``set_style("paper")``."""
     raise NotImplementedError
+
+
+# ------------------------------------------------ insets, callouts, tables ----
+def _scale() -> float:
+    """Context scale of the active style (``set_style``'s *scale*)."""
+    return plt.rcParams["font.size"] / t.FONT_PT
+
+
+def inset_zoom(ax, xlim, ylim, bounds=(0.55, 0.55, 0.4, 0.4)):
+    """Inset axes on *ax* zoomed to *xlim* x *ylim*, no ticks, box and
+    connectors in RULE. Everything already drawn on *ax* is clipped away under
+    the inset, so the background stays transparent; call after plotting on
+    *ax*. Plot into the returned inset."""
+    lw = t.LINEWIDTH["leader"] * _scale()
+    bx, by, bw, bh = bounds
+    # outer axes box counter-clockwise, inset box clockwise = hole under either fill rule
+    hole = MplPath([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0),
+                    (bx, by), (bx, by + bh), (bx + bw, by + bh), (bx + bw, by), (bx, by)],
+                   [MplPath.MOVETO, *[MplPath.LINETO] * 3, MplPath.CLOSEPOLY] * 2)
+    for artist in (*ax.lines, *ax.collections, *ax.patches, *ax.images, *ax.texts,
+                   *ax.xaxis.get_gridlines(), *ax.yaxis.get_gridlines()):
+        artist.set_clip_path(hole, ax.transAxes)
+    ins = ax.inset_axes(bounds, xlim=xlim, ylim=ylim, xticks=[], yticks=[])
+    for spine in ins.spines.values():  # frame; a patch would be half-clipped by the axes box
+        spine.set(visible=True, linewidth=lw, edgecolor=t.RULE)
+    ax.indicate_inset_zoom(ins, edgecolor=t.RULE, linewidth=lw, alpha=1)
+    return ins
+
+
+def callouts(ax, points: Mapping[str, tuple[float, float]], x: float = 0.72,
+             y_top: float = 0.92, step: float = 0.1):
+    """Label *points* (label -> data ``(x, y)``) hand-drawn-diagram style:
+    labels stacked at axes-fraction *x*, from *y_top* downwards; each leader
+    runs horizontally from the label, then bends at 45 deg into the point.
+    Returns the annotations."""
+    lw = t.LINEWIDTH["leader"] * _scale()
+    ax.autoscale_view()  # apply pending autoscale, else transData is stale
+    out = []
+    for i, (label, (px, py)) in enumerate(points.items()):
+        ty = y_top - i * step
+        # ponytail: angle fixed from the current limits; change xlim/ylim after this and the bend drifts
+        dx, dy = ax.transAxes.transform((x, ty)) - ax.transData.transform((px, py))
+        if abs(dy) > abs(dx):  # 45 deg leg would overshoot the label: straight leader instead
+            angle_b = np.degrees(np.arctan2(dy, dx))
+        else:
+            angle_b = 45 if dx * dy > 0 else -45
+        out.append(ax.annotate(
+            label, (px, py), xytext=(x, ty), textcoords="axes fraction", ha="left", va="center",
+            arrowprops={"arrowstyle": "-", "color": t.RULE, "lw": lw, "shrinkA": 2, "shrinkB": 2,
+                        "connectionstyle": f"angle,angleA=0,angleB={angle_b},rad=0"},
+        ))
+    return out
+
+
+def table(ax, df: pl.DataFrame, index: str | None = None):
+    """Booktabs-style table of *df* in *ax*: transparent cells, rules only
+    above and below the header and under the last row, no vertical lines;
+    header and *index* column bold. Hides the axes. Returns the ``Table``."""
+    rows = [[str(v) for v in row] for row in df.rows()]
+    tb = ax.table(cellText=rows, colLabels=df.columns, loc="center", cellLoc="center")
+    tb.auto_set_font_size(False)
+    tb.set_fontsize(plt.rcParams["font.size"])
+    tb.scale(1, 1.4)
+    idx = df.columns.index(index) if index else -1
+    for (r, c), cell in tb.get_celld().items():
+        cell.set(facecolor="none", edgecolor=t.RULE, linewidth=t.LINEWIDTH["tick_major"] * _scale())
+        cell.visible_edges = "TB" if r == 0 else "B" if r == len(rows) else "open"
+        if r == 0 or c == idx:
+            cell.set_text_props(weight="bold")
+    ax.axis("off")
+    return tb

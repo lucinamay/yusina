@@ -5,7 +5,7 @@ agg.path.chunksize: 0
 
 axes.autolimit_mode: data
 axes.axisbelow: True
-axes.edgecolor: "#606060"
+axes.edgecolor: "#A8A8A8"
 axes.facecolor: "#FFFFFF00"
 axes.formatter.limits: -5, 6
 axes.formatter.offset_threshold: 4
@@ -15,10 +15,10 @@ axes.grid: False
 axes.grid.axis: both
 axes.grid.which: major
 axes.labelcolor: "#606060"
-axes.labelpad: 4.0
-axes.labelsize: 12.5
+axes.labelpad: 3.2
+axes.labelsize: 10.0
 axes.labelweight: regular
-axes.linewidth: 0.5
+axes.linewidth: 0.64
 axes.prop_cycle: cycler('color', ['0173B2', 'DE8F05', '029E73', 'D55E00', 'CC78BC', 'CA9161', 'FBAFE4', '949494', 'ECE133', '56B4E9'])
 axes.spines.bottom: True
 axes.spines.left: True
@@ -26,8 +26,8 @@ axes.spines.right: False
 axes.spines.top: False
 axes.titlecolor: "#606060"
 axes.titlelocation: center
-axes.titlepad: 10.0
-axes.titlesize: 13.5
+axes.titlepad: 8.0
+axes.titlesize: 10.8
 axes.titleweight: regular
 axes.unicode_minus: True
 axes.xmargin: 0.05
@@ -38,28 +38,28 @@ axes3d.grid: True
 
 boxplot.boxprops.color: "#005686"
 boxplot.boxprops.linestyle: -
-boxplot.boxprops.linewidth: 1.0
+boxplot.boxprops.linewidth: 0.8
 boxplot.capprops.color: "#005686"
 boxplot.capprops.linestyle: -
-boxplot.capprops.linewidth: 1.0
+boxplot.capprops.linewidth: 0.8
 boxplot.flierprops.linestyle: none
-boxplot.flierprops.linewidth: 1.0
+boxplot.flierprops.linewidth: 0.8
 boxplot.flierprops.marker: o
 boxplot.flierprops.markeredgecolor: "#005686"
-boxplot.flierprops.markeredgewidth: 1.0
+boxplot.flierprops.markeredgewidth: 0.8
 boxplot.flierprops.markerfacecolor: "#0173B2"
-boxplot.flierprops.markersize: 3.0
+boxplot.flierprops.markersize: 2.4
 boxplot.meanline: False
 boxplot.meanprops.color: "#005686"
 boxplot.meanprops.linestyle: --
-boxplot.meanprops.linewidth: 1.0
+boxplot.meanprops.linewidth: 0.8
 boxplot.meanprops.marker: ^
 boxplot.meanprops.markeredgecolor: "#005686"
 boxplot.meanprops.markerfacecolor: "#0173B2"
-boxplot.meanprops.markersize: 3.0
+boxplot.meanprops.markersize: 2.4
 boxplot.medianprops.color: "#005686"
 boxplot.medianprops.linestyle: -
-boxplot.medianprops.linewidth: 1.0
+boxplot.medianprops.linewidth: 0.8
 boxplot.notch: True
 boxplot.patchartist: True
 boxplot.showbox: True
@@ -69,12 +69,12 @@ boxplot.showmeans: False
 boxplot.vertical: True
 boxplot.whiskerprops.color: "#005686"
 boxplot.whiskerprops.linestyle: -
-boxplot.whiskerprops.linewidth: 1.0
+boxplot.whiskerprops.linewidth: 0.8
 
 contour.corner_mask: True
 contour.negative_linestyle: dashed
 
-errorbar.capsize: 3.0
+errorbar.capsize: 2.4
 
 figure.autolayout: False
 figure.dpi: 150
@@ -82,26 +82,26 @@ figure.edgecolor: "#FFFFFF00"
 figure.facecolor: "#FFFFFF00"
 figure.figsize: 6.0, 4.0
 figure.frameon: True
-figure.labelsize: 12.0
+figure.labelsize: 9.6
 figure.labelweight: regular
-figure.titlesize: 11.0
+figure.titlesize: 8.8
 figure.titleweight: regular
 
 font.family: sans-serif
 font.sans-serif: Helvetica Neue, Helvetica, Avenir Next, DejaVu Sans
-font.size: 10.0
+font.size: 8.0
 font.stretch: normal
 font.style: normal
 font.variant: normal
 font.weight: regular
 
 grid.alpha: 0.0
-grid.color: "#606060"
+grid.color: "#A8A8A8"
 grid.linestyle: -
-grid.linewidth: 0.5
+grid.linewidth: 0.64
 
 hatch.color: "#606060"
-hatch.linewidth: 0.5
+hatch.linewidth: 0.4
 
 image.aspect: equal
 image.cmap: yusina
@@ -117,7 +117,7 @@ legend.columnspacing: 2.0
 legend.edgecolor: "#FFFFFF00"
 legend.facecolor: inherit
 legend.fancybox: True
-legend.fontsize: 10.0
+legend.fontsize: 8.0
 legend.framealpha: 0.8
 legend.frameon: False
 legend.handleheight: 0.7
@@ -130,19 +130,19 @@ legend.markerscale: 1.0
 legend.numpoints: 1
 legend.scatterpoints: 1
 legend.shadow: False
-legend.title_fontsize: 10.0
+legend.title_fontsize: 8.0
 
 lines.antialiased: True
 lines.color: "#606060"
 lines.dash_capstyle: round
 lines.dash_joinstyle: round
 lines.linestyle: -
-lines.linewidth: 1.5
+lines.linewidth: 1.2
 lines.marker: None
 lines.markeredgecolor: auto
 lines.markeredgewidth: 0.0
 lines.markerfacecolor: auto
-lines.markersize: 4.0
+lines.markersize: 3.2
 lines.scale_dashes: True
 lines.solid_capstyle: round
 lines.solid_joinstyle: round
@@ -186,34 +186,34 @@ text.usetex: False
 
 xtick.alignment: center
 xtick.bottom: True
-xtick.color: "#606060"
+xtick.color: "#A8A8A8"
 xtick.direction: out
 xtick.labelbottom: True
 xtick.labelcolor: "#606060"
-xtick.labelsize: 7.2
+xtick.labelsize: 5.76
 xtick.labeltop: False
-xtick.major.pad: 3.0
-xtick.major.size: 2.0
-xtick.major.width: 0.5
-xtick.minor.pad: 3.0
-xtick.minor.size: 1.0
+xtick.major.pad: 2.4
+xtick.major.size: 1.6
+xtick.major.width: 0.64
+xtick.minor.pad: 2.4
+xtick.minor.size: 0.8
 xtick.minor.visible: False
-xtick.minor.width: 0.4
+xtick.minor.width: 0.48
 xtick.top: False
 
 ytick.alignment: center_baseline
-ytick.color: "#606060"
+ytick.color: "#A8A8A8"
 ytick.direction: out
 ytick.labelcolor: "#606060"
 ytick.labelleft: True
 ytick.labelright: False
-ytick.labelsize: 7.2
+ytick.labelsize: 5.76
 ytick.left: True
-ytick.major.pad: 3.0
-ytick.major.size: 2.0
-ytick.major.width: 0.5
-ytick.minor.pad: 3.0
-ytick.minor.size: 1.0
+ytick.major.pad: 2.4
+ytick.major.size: 1.6
+ytick.major.width: 0.64
+ytick.minor.pad: 2.4
+ytick.minor.size: 0.8
 ytick.minor.visible: False
-ytick.minor.width: 0.4
+ytick.minor.width: 0.48
 ytick.right: False

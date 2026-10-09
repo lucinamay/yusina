@@ -48,8 +48,8 @@ def plotly_template(scale: float | str = 1.0, register: str = t.DEFAULT_REGISTER
     axis = {
         "showgrid": reg["grid_alpha"] > 0, "gridcolor": _rgba(t.GRID, reg["grid_alpha"]),
         "gridwidth": t.LINEWIDTH["grid"] * scale, "zeroline": False,
-        "showline": reg["spine_lw"] > 0, "linecolor": t.INK, "linewidth": reg["spine_lw"] * scale or 1,
-        "ticks": "outside", "tickcolor": t.INK, "ticklen": t.TICK_LEN["major"] * scale,
+        "showline": reg["spine_lw"] > 0, "linecolor": t.RULE, "linewidth": reg["spine_lw"] * scale or 1,
+        "ticks": "outside", "tickcolor": t.RULE, "ticklen": t.TICK_LEN["major"] * scale,
         "tickwidth": t.LINEWIDTH["tick_major"] * scale, "tickfont": {"size": t.FONT_SCALE["tick_label"] * pt},
         "title": {"font": {"size": t.FONT_SCALE["axes_label"] * pt}},
     }
@@ -93,7 +93,7 @@ def theme_yusina(scale: float | str = 1.0, register: str = t.DEFAULT_REGISTER):
     rc = {k: v for k, v in build_rc(scale, register).items() if k in valid}
     grid = (element_line(color=t.GRID, alpha=reg["grid_alpha"], size=t.LINEWIDTH["grid"] * scale)
             if reg["grid_alpha"] > 0 else element_blank())
-    spine = (element_line(color=t.INK, size=reg["spine_lw"] * scale)
+    spine = (element_line(color=t.RULE, size=reg["spine_lw"] * scale)
              if reg["spine_lw"] > 0 else element_blank())
     look = theme_matplotlib(rc=rc) + theme(
         panel_background=element_blank(), panel_border=element_blank(), plot_background=element_blank(),
