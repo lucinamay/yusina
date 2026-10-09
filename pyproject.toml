@@ -41,3 +41,6 @@ dev = [
     "numpy>=2.0.2",
     "polars>=1.36.1",
 ]
+
+[tool.setuptools.package-data]
+yusina = ["*.mplstyle", "*.csv"]

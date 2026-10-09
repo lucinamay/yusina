@@ -62,6 +62,21 @@ def test_every_mapped_key_is_real():
     assert not unknown, f"unknown rcParams: {sorted(unknown)}"
 
 
+def test_palette_tags():
+    from yusina import palettes as P
+
+    assert P.hue_name("#FC8D62") == "orange" and P.hue_name("#B3B3B3") == "grey"
+    assert P.google_like(P.get("Tol bright")) and not P.google_like(P.get("Carto Vivid"))
+    assert P.blue_orange_start(P.get("Okabe-Ito"))
+    assert P.distinct_n(P.get("seaborn colorblind")) == 3           # blue orange green, then orange again
+    t = P.tags("Carto Vivid")
+    assert abs(t["warm"] + t["cold"] - 1) < 1e-9 and t["contrast"] > 0
+    assert "Carto Vivid" in P.find(mood="vivid", blue_orange_start=True)
+    assert all(isinstance(v, (str, bool, int, float, list, dict)) for v in t.values())  # json-safe
+    m = P.match("Egypt", "Carto Vivid")                                     # Carto Vivid leads orange, blue
+    assert [P.base_hue(c) for c in m[:2]] == ["orange", "blue"] and sorted(m) == sorted(P.get("Egypt"))
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):
