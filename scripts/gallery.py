@@ -76,6 +76,7 @@ def boxes(ax):
     for i, c in enumerate(plt.rcParams["axes.prop_cycle"].by_key()["color"][: len(data)]):
         _set_ax_boxplot_i_colour(bp, i, c, inner_alpha=1.0)
     ax.set(title="boxplot: notch, fliers, means", ylabel="value")
+    figures.group_ticks(ax)  # label colours read off the boxes
 
 
 def errorbars(ax):
@@ -265,17 +266,12 @@ def violins(ax):
     for i, (d, c) in enumerate(zip(data, _cycle())):
         ax.scatter(rng.normal(i + 1, 0.04, len(d)), d, s=4, color=outline(c), alpha=0.5, edgecolors="none")
     ax.set(title="violin + strip", xticks=range(1, 5), xticklabels=list("abcd"), ylabel="value")
-    figures.group_ticks(ax, _cycle()[:4])
+    figures.group_ticks(ax)  # label colours read off the violins
 
 
 def strip(ax):
-    for i, c in enumerate(_cycle()[:5]):
-        d = rng.normal(i * 0.5, 1, 60)
-        ax.scatter(rng.normal(i, 0.08, len(d)), d, s=10, color=c, alpha=0.6, edgecolors="none")
-        ax.hlines(d.mean(), i - 0.25, i + 0.25, color=outline(c), lw=2)  # hlines: a mark, not a series, so no dash cycle
-    ax.xaxis.grid(False)
-    ax.set(title="strip + mean", xticks=range(5), xticklabels=list("abcde"), ylabel="value")
-    figures.group_ticks(ax, _cycle()[:5])  # the x labels are the legend here
+    figures.strip(ax, [rng.normal(i * 0.5, 1, 60) for i in range(5)], labels=list("abcde"))  # dots, strong-outline means, labels as legend
+    ax.set(title="strip + mean", ylabel="value")
 
 
 def kde(ax):
@@ -343,25 +339,20 @@ def barh(ax):
     bars_ = ax.barh(labels, vals, color=_cycle()[0])
     ax.bar_label(bars_, padding=3)  # the bar's colour, bold, GOLDEN of the bar height tall
     ax.set(title="horizontal bars + value labels", xlabel="value", xlim=(0, 58))
-    figures.group_ticks(ax, t.INK, axis="y", size=plt.rcParams["legend.fontsize"], weight="normal")  # the y labels are the legend: legend size, no colour, no bold
+    figures.group_ticks(ax, "y", t.INK, size=plt.rcParams["legend.fontsize"], weight="normal")  # the y labels are the legend: legend size, no colour, no bold
 
 
 def lollipop(ax):
     vals = np.sort(rng.random(10))
-    y = np.arange(10)
-    ax.hlines(y, 0, vals, color=_cycle()[0], lw=2)
-    ax.plot(vals, y, "o", color=_cycle()[0], markersize=plt.rcParams["lines.markersize"] * 1.6, linestyle="none")
-    ax.set(title="lollipop", yticks=y, yticklabels=[f"gene {i}" for i in y], xlabel="score")
+    figures.lollipop(ax, [f"gene {i}" for i in range(10)], vals)
+    ax.set(title="lollipop", xlabel="score")
 
 
 def dumbbell(ax):
-    y = np.arange(7); before = rng.random(7); after = before + rng.normal(0.2, 0.15, 7)
-    c0, c1 = _cycle()[:2]
-    ax.hlines(y, before, after, color=t.RULE, lw=2.5)
-    ms = plt.rcParams["lines.markersize"] * 1.6
-    ax.plot(before, y, "o", color=c0, label="before", markersize=ms, linestyle="none"); ax.plot(after, y, "o", color=c1, label="after", markersize=ms, linestyle="none")
+    before = rng.random(7); after = before + rng.normal(0.2, 0.15, 7)
+    figures.dumbbell(ax, [f"site {i}" for i in range(7)], before, after)
     ax.legend()
-    ax.set(title="dumbbell", yticks=y, yticklabels=[f"site {i}" for i in y], xlabel="value")
+    ax.set(title="dumbbell", xlabel="value")
 
 
 def pie_donut(ax):
