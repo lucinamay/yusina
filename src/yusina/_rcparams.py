@@ -129,7 +129,7 @@ def build_rc(scale: float = 1.0, register: str = t.DEFAULT_REGISTER) -> dict:
         "axes.spines.bottom": True,
         "axes.spines.top": False,
         "axes.spines.right": False,
-        "axes.prop_cycle": cycler(color=list(reg["cycle"])),
+        "axes.prop_cycle": cycler(color=list(reg["cycle"])) + cycler(linestyle=[t.DASHES[i % len(t.DASHES)] for i in range(len(reg["cycle"]))]),
         "axes.xmargin": 0.05,
         "axes.ymargin": 0.05,
         "axes.zmargin": 0.05,
@@ -187,6 +187,7 @@ def build_rc(scale: float = 1.0, register: str = t.DEFAULT_REGISTER) -> dict:
         "image.resample": True,
         "image.composite_image": True,
         "contour.negative_linestyle": "dashed",
+        "contour.linewidth": t.LINEWIDTH["box"] * scale,  # as box edges; contour lines are edges of their fills
         "contour.corner_mask": True,
         # ---- scatter & errorbar ----
         "scatter.marker": "o",

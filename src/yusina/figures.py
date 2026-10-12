@@ -27,7 +27,7 @@ from matplotlib.path import Path as MplPath
 from matplotlib.tri import Triangulation
 
 from yusina import tokens as t
-from yusina.colours import outline
+from yusina.colours import outline, readable
 
 
 # ------------------------------------------------------------------ saving ----
@@ -253,13 +253,6 @@ def triheatmap(
 
 
 # --------------------------------------------------------------- bar plots ----
-def _luminance(colour) -> float:
-    """Relative (WCAG) luminance of *colour*; white = 1, black = 0."""
-    c = np.asarray(mcolors.to_rgb(colour))
-    lin = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
-    return float(lin @ [0.2126, 0.7152, 0.0722])
-
-
 def stacked_bar(categories, threshold: float = 0.0, ax=None, palette=None,
                 other_label: str = "Other"):
     """One vertical stacked bar showing the category mix of *categories*
@@ -295,9 +288,7 @@ def stacked_bar(categories, threshold: float = 0.0, ax=None, palette=None,
         share = count / total
         ax.bar(0, share, bottom=bottom, width=0.6, color=color, edgecolor="white")
         mid = bottom + share / 2
-        text_color = color
-        while _luminance(text_color) > 0.3:  # under 3:1 contrast on white: darken until readable
-            text_color = outline(text_color)
+        text_color = readable(color)  # the bar's own colour, darkened until 3:1 on white
         label = ax.text(0.4, mid, cleanfmt(str(key)).capitalize(),
                         va="center", ha="left", color=text_color, weight="bold")
         ax.annotate(f" ({share * 100:.1f}%)", (1, 0.5), xycoords=label,
@@ -570,20 +561,70 @@ def _scale() -> float:
     return plt.rcParams["font.size"] / t.FONT_PT
 
 
-def inset_zoom(ax, xlim, ylim, bounds=(0.55, 0.55, 0.4, 0.4)):
-    """Inset axes on *ax* zoomed to *xlim* x *ylim*, no ticks, box and
-    connectors in RULE. Everything already drawn on *ax* is clipped away under
-    the inset, so the background stays transparent; call after plotting on
-    *ax*. Plot into the returned inset."""
-    lw = t.LINEWIDTH["leader"] * _scale()
-    bx, by, bw, bh = bounds
-    # outer axes box counter-clockwise, inset box clockwise = hole under either fill rule
-    hole = MplPath([(0, 0), (1, 0), (1, 1), (0, 1), (0, 0),
-                    (bx, by), (bx, by + bh), (bx + bw, by + bh), (bx + bw, by), (bx, by)],
-                   [MplPath.MOVETO, *[MplPath.LINETO] * 3, MplPath.CLOSEPOLY] * 2)
+def ridgeline(ax, grid, curves, colours=None, labels=None, alpha: float = 0.8, overlap: float = 1 / t.GOLDEN,
+              reset: bool = False):
+    """Ridges stacked one unit apart, each curve scaled to *overlap* units tall, front rows
+    lower. *reset*: a ridge's fill starts where the rows in front of it end, so its alpha
+    composites over the transparent canvas rather than over the ridge behind; the outline
+    of a hidden stretch is dropped too. Without it the translucent fills overlap and add
+    up, as in an ordinary ridgeline. Returns the fills."""
+    grid = np.asarray(grid, dtype=float)
+    curves = [np.asarray(c, dtype=float) for c in curves]
+    tops = [i + c / c.max() * overlap for i, c in enumerate(curves)]
+    colours = colours or [p["color"] for p, _ in zip(plt.rcParams["axes.prop_cycle"](), curves)]
+    fills = []
+    for i, (top, c) in enumerate(zip(tops, colours)):
+        front = np.max(tops[:i], axis=0) if i and reset else np.full_like(grid, -np.inf)  # envelope of the rows in front
+        base = np.maximum(i, front)
+        fills.append(ax.fill_between(grid, base, top, where=top > base, color=c, alpha=alpha, lw=0, zorder=5 - i))
+        ax.plot(grid, np.where(top > front, top, np.nan), color=outline(c), lw=0.8, linestyle="-", zorder=5 - i)  # an edge, not a series: no dash
+    if labels is not None:
+        ax.set(yticks=range(len(curves)), yticklabels=list(labels))
+    return fills
+
+
+def group_ticks(ax, colours, axis: str = "x", size: float | None = None, weight: str = "bold"):
+    """Tick labels as a pseudo-legend: each category label in its group's colour (darkened
+    until readable), bold, at *size* points (default ``axes.labelsize``). For strips, violins
+    and boxes whose positions already separate the groups; call after the tick labels are
+    set. One colour (a string) applies to every label: the quiet form for single-colour
+    bars is ink at ``legend.fontsize`` with ``weight="normal"``."""
+    labels = getattr(ax, f"get_{axis}ticklabels")()
+    colours = [colours] * len(labels) if isinstance(colours, str) else colours
+    size = plt.rcParams["axes.labelsize"] if size is None else size
+    for label, c in zip(labels, colours):
+        label.set(color=readable(c), fontweight=weight, fontsize=size)
+    return labels
+
+
+def erase_under(ax, bounds, extra=()):
+    """Clip everything drawn on *ax* away under the axes-fraction rectangle *bounds*
+    (left, bottom, width, height). Rectangles given here are remembered on the axes;
+    ``set_style``'s draw wrapper re-applies them at every draw together with the legend
+    box (as *extra*) and, with ``under`` > 0, draws what lies under them faded instead
+    of erased, the canvas staying transparent. Call after plotting."""
+    holes = ax.__dict__.setdefault("_yusina_holes", [])
+    if bounds is not None and tuple(bounds) not in holes:
+        holes.append(tuple(bounds))
+    rects = [*holes, *(tuple(b) for b in extra)]
+    if not rects:
+        return
+    verts = [(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)]  # outer box counter-clockwise ...
+    for bx, by, bw, bh in rects:                        # ... holes clockwise = cut out under the nonzero rule
+        verts += [(bx, by), (bx, by + bh), (bx + bw, by + bh), (bx + bw, by), (bx, by)]
+    path = MplPath(verts, [MplPath.MOVETO, *[MplPath.LINETO] * 3, MplPath.CLOSEPOLY] * (len(rects) + 1))
     for artist in (*ax.lines, *ax.collections, *ax.patches, *ax.images, *ax.texts,
                    *ax.xaxis.get_gridlines(), *ax.yaxis.get_gridlines()):
-        artist.set_clip_path(hole, ax.transAxes)
+        artist.set_clip_path(path, ax.transAxes)
+
+
+def inset_zoom(ax, xlim, ylim, bounds=(0.96 - (1 - t.GOLDEN), 0.96 - (1 - t.GOLDEN), 1 - t.GOLDEN, 1 - t.GOLDEN)):
+    """Inset axes on *ax* zoomed to *xlim* x *ylim*, no ticks, frame and connectors in
+    RULE; by default the minor golden section of the axes, top right. What *ax* already
+    drew under the inset is erased, or faded by ``set_style(under=...)``; call after
+    plotting on *ax*. Plot into the returned inset."""
+    lw = t.LINEWIDTH["leader"] * _scale()
+    erase_under(ax, bounds)
     ins = ax.inset_axes(bounds, xlim=xlim, ylim=ylim, xticks=[], yticks=[])
     for spine in ins.spines.values():  # frame; a patch would be half-clipped by the axes box
         spine.set(visible=True, linewidth=lw, edgecolor=t.RULE)

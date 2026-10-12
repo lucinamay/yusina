@@ -33,8 +33,11 @@ def _fmt(v) -> str:
     # matplotlib treats '#' as a comment in .mplstyle, so hex colours must be
     # quoted, and cycle colours are written bare (6-hex, no '#').
     if isinstance(v, Cycler):
-        cols = [c.lstrip("#") for c in v.by_key()["color"]]
-        return "cycler('color', [{}])".format(", ".join(repr(c) for c in cols))
+        keys = v.by_key(); cols = [c.lstrip("#") for c in keys["color"]]
+        out = "cycler('color', [{}])".format(", ".join(repr(c) for c in cols))
+        if "linestyle" in keys:
+            out += " + cycler('linestyle', [{}])".format(", ".join(repr(d) for d in keys["linestyle"]))
+        return out
     if isinstance(v, bool):
         return "True" if v else "False"
     if isinstance(v, str):

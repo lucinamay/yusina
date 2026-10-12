@@ -22,8 +22,10 @@ import polars as pl
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
+from matplotlib.transforms import TransformedPath
 
 from yusina import figures as f
+from yusina import set_style
 
 DF = pl.DataFrame(
     {
@@ -97,6 +99,7 @@ def test_triheatmap():
 
 
 def test_inset_callouts_table():
+    set_style(under=0)  # erase under the inset and the legend
     _, ax = plt.subplots()
     ax.semilogx([1, 10, 100], [0, 1, 0])
     f.inset_zoom(ax, (1, 10), (0, 1), bounds=(0.5, 0.5, 0.4, 0.4))
@@ -106,9 +109,57 @@ def test_inset_callouts_table():
     x, y = ax.transData.transform((10 ** 1.25, 0.75))  # on the parent line, under the inset
     assert (img[img.shape[0] - int(y), int(x)] == img[0, 0]).all()  # erased to background
     assert len(f.callouts(ax, {"up": (10, 1), "down": (100, 0)})) == 2
+    ax.legend(["curve"], loc="lower left"); canvas.draw()  # the legend box joins the holes at draw time
+    clip = cast(TransformedPath, ax.lines[0].get_clip_path()).get_fully_transformed_path()  # outer box + inset hole + legend hole
+    assert len(np.asarray(clip.vertices)) == 15  # outer box + inset hole + legend hole, 5 vertices each
+    plt.close("all")
+
+
+def test_legend_under():
+    """A thick black line under the legend box is drawn at a quarter alpha, not erased, not hidden; same under an inset."""
+    set_style()
+    _, ax = plt.subplots()
+    ax.plot([0, 1], [0.5, 0.5], lw=20, color="#000000"); ax.set(xlim=(0, 1), ylim=(0, 1)); ax.grid(False)
+    leg = ax.legend(["x"], loc="center", handlelength=0, handletextpad=0, borderpad=3)  # wide empty padding, no handle
+    canvas = cast(FigureCanvasAgg, ax.figure.canvas); canvas.draw()
+    img = np.asarray(canvas.buffer_rgba()); x0, y0, x1, y1 = leg.get_window_extent().extents
+    at = (img.shape[0] - int((y0 + y1) / 2), int(x0) + 6)  # inside the box, in the padding
+    assert 60 <= img[at][3] <= 66 and (img[at][:3] == 0).all()  # black at a quarter alpha on the transparent canvas
+    set_style(under=0); canvas.draw(); img = np.asarray(canvas.buffer_rgba())
+    assert (img[at] == img[0, 0]).all()  # erased to background
+    set_style()
+    _, ax = plt.subplots()  # the same under an inset: the parent line fades, the inset's own content stays full
+    ax.plot([0, 1], [0.62, 0.62], lw=20, color="#000000"); ax.set(xlim=(0, 1), ylim=(0, 1)); ax.grid(False)
+    ins = f.inset_zoom(ax, (0, 1), (0.4, 0.6), bounds=(0.3, 0.3, 0.4, 0.4)); ins.plot([0, 1], [0.5, 0.5], lw=20, color="#FF0000"); ins.grid(False)
+    canvas = cast(FigureCanvasAgg, ax.figure.canvas); canvas.draw(); img = np.asarray(canvas.buffer_rgba())
+    cx, cy = ax.transAxes.transform((0.5, 0.5)); px, py = ax.transAxes.transform((0.5, 0.62))
+    assert (img[img.shape[0] - int(cy), int(cx)][:3] == [255, 0, 0]).all()  # inset line on top, full
+    assert (img[img.shape[0] - int(py), int(px)] == [0, 0, 0, 64]).all()  # parent line under the inset at a quarter alpha
     tb = f.table(ax, DF.head(2), index="a")
     assert tb[0, 0].visible_edges == "TB" and tb[2, 0].visible_edges == "B"
     assert tb[1, 0].get_text().get_fontweight() == "bold"
+    plt.close("all")
+
+
+def test_ridgeline_reset():
+    """In the overlap, reset=True leaves only the front ridge's alpha; without it the fills add up."""
+    grid = np.linspace(-3, 3, 200); curves = [np.exp(-(grid**2)), np.exp(-((grid - 0.3) ** 2))]
+    alphas = []
+    set_style()  # transparent canvas: the alpha channel carries the composite
+    for reset in (True, False):
+        _, ax = plt.subplots(); ax.grid(False)
+        f.ridgeline(ax, grid, curves, colours=["#000000", "#000000"], alpha=0.5, reset=reset)
+        canvas = cast(FigureCanvasAgg, ax.figure.canvas); canvas.draw(); img = np.asarray(canvas.buffer_rgba())
+        x, y = ax.transData.transform((0.15, 1.2))  # inside both ridges: above row 1's base, below row 0's top
+        alphas.append(int(img[img.shape[0] - int(y), int(x)][3])); plt.close("all")
+    assert alphas[0] == 128 and alphas[1] in (191, 192)  # 0.5 alone vs 1 - 0.5 * 0.5 stacked
+
+
+def test_group_ticks():
+    _, ax = plt.subplots()
+    ax.set(xticks=[0, 1], xticklabels=["a", "b"])
+    labels = f.group_ticks(ax, ["#2C5F8A", "#FFD700"])
+    assert labels[0].get_color() == "#2c5f8a" and labels[1].get_color() != "#ffd700" and labels[0].get_fontweight() == "bold"
     plt.close("all")
 
 

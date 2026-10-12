@@ -85,6 +85,8 @@ def test_generated_file_loads():
             assert mpl.rcParams["text.color"] == "#606060"       # quoted hex
             first = t.REGISTERS[t.DEFAULT_REGISTER]["cycle"][0]
             assert mpl.rcParams["axes.prop_cycle"].by_key()["color"][0].lstrip("#") == first.lstrip("#")
+            dashes = mpl.rcParams["axes.prop_cycle"].by_key()["linestyle"]  # colour and dash advance together
+            assert dashes[0] == "-" and len(set(map(str, dashes[:6]))) == min(6, len(dashes))
     finally:
         path.unlink()
 
@@ -93,6 +95,97 @@ def test_every_mapped_key_is_real():
     unknown = set(build_rc()) - set(mpl.rcParams)
     # build_rc may carry keys for newer matplotlib; just report, don't fail hard
     assert not unknown, f"unknown rcParams: {sorted(unknown)}"
+
+
+def test_contour_outline():
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.colors import to_hex
+
+    from yusina import set_style
+    from yusina.colours import outline
+
+    def hexes(colours):
+        return [to_hex((float(c[0]), float(c[1]), float(c[2]))) for c in np.asarray(colours)]
+
+    def close(a, b):  # outline() of a float RGBA vs of its hex: one 8-bit step of rounding
+        return all(abs(int(x[i:i + 2], 16) - int(y[i:i + 2], 16)) <= 1 for x, y in zip(a, b) for i in (1, 3, 5))
+
+    _, ax = plt.subplots()
+    z = np.add.outer(np.arange(5.0), np.arange(5.0))
+    set_style(grid_defaults=False); plain = hexes(ax.contour(z, levels=4, cmap="viridis").get_edgecolor())
+    set_style(); styled = hexes(ax.contour(z, levels=4, cmap="viridis").get_edgecolor())
+    assert close(styled, [outline(c, "strong") for c in plain])  # each line: the darker edge of its own level colour
+    assert hexes(ax.contour(z, levels=4, colors="k").get_edgecolor())[0] == "#000000"  # explicit colours untouched
+    plt.close("all")
+
+
+def test_arrow_defaults():
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    from yusina import set_style
+
+    set_style()
+    _, ax = plt.subplots()
+    x, y = np.meshgrid(np.arange(4.0), np.arange(4.0))
+    assert ax.quiver(x, y, y, -x).width == t.ARROWS["quiver"]["width"]
+    assert ax.quiver(x, y, y, -x, width=0.01).width == 0.01  # explicit keyword wins
+    assert np.atleast_1d(ax.streamplot(x, y, y, -x).lines.get_linewidth())[0] == t.ARROWS["streamplot"]["linewidth"] * t.CONTEXTS[t.DEFAULT_CONTEXT]
+    plt.close("all")
+
+
+def test_mark_coloured_labels():
+    from typing import cast
+
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.colors import to_hex
+    from matplotlib.patches import Patch
+
+    from yusina import set_style
+    from yusina.colours import outline, readable
+
+    set_style()
+    _, ax = plt.subplots()
+    bars = ax.barh(["a", "b"], [3, 5], color="#FFD700")
+    texts = ax.bar_label(bars)
+    assert texts[0].get_color() == readable("#FFD700") != "#ffd700" and texts[0].get_fontweight() == "bold"  # darkened gold, bold
+    thickness = bars[0].get_window_extent(cast(FigureCanvasAgg, ax.figure.canvas).get_renderer()).height * 72 / ax.figure.dpi
+    assert abs(texts[0].get_fontsize() - thickness * t.GOLDEN) < 1e-6  # label height is the golden section of the bar
+    assert ax.bar_label(bars, color="k")[0].get_color() == "k"  # explicit colour wins
+    bins = cast(list[Patch], ax.hist([1, 2, 2, 3], bins=3, color="#2C5F8A", outline=True)[2])
+    assert to_hex(bins[0].get_edgecolor()) == outline("#2C5F8A") and bins[0].get_linewidth() > 0  # edged bins on request
+    assert cast(list[Patch], ax.hist([1, 2], bins=2)[2])[0].get_linewidth() == 0  # plain hist keeps the edgeless default
+    wedges, labels = ax.pie([1, 2], labels=["x", "y"], colors=["#2C5F8A", "#FFD700"])
+    assert labels[0].get_color() == "#2c5f8a" and labels[1].get_color() == readable("#FFD700")
+    assert labels[0].get_fontweight() == "bold" and labels[0].get_fontsize() == plt.rcParams["axes.labelsize"]
+    plt.close("all")
+
+
+def test_violin_defaults():
+    from typing import cast
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.collections import LineCollection, PolyCollection
+    from matplotlib.colors import to_hex
+
+    from yusina import set_style
+    from yusina.colours import outline
+
+    set_style()
+    _, ax = plt.subplots()
+    parts = ax.violinplot([np.arange(10.0), np.arange(5.0)], showmedians=True)
+    c0 = plt.rcParams["axes.prop_cycle"].by_key()["color"][0]
+    body = cast(list[PolyCollection], parts["bodies"])[0]; medians = cast(LineCollection, parts["cmedians"])
+    def hex3(colours):
+        r, g, b = (float(x) for x in np.asarray(colours)[0][:3])
+        return to_hex((r, g, b))
+
+    assert hex3(body.get_facecolor()) == c0.lower() and body.get_zorder() == 1
+    assert hex3(medians.get_colors()) == outline(c0, "strong")
+    plt.close("all")
 
 
 def test_palette_tags():

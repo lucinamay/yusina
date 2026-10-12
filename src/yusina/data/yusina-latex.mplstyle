@@ -19,7 +19,7 @@ axes.labelpad: 3.2
 axes.labelsize: 10.0
 axes.labelweight: regular
 axes.linewidth: 0.64
-axes.prop_cycle: cycler('color', ['EE7733', '0077BB', '33BBEE', 'EE3377', 'CC3311', '009988', 'BBBBBB'])
+axes.prop_cycle: cycler('color', ['EE7733', '0077BB', '33BBEE', 'EE3377', 'CC3311', '009988', 'BBBBBB']) + cycler('linestyle', ['-', '-.', (5, (10, 3)), ':', '--', (0, (3, 1.5, 1, 1.5, 1, 1.5)), '-'])
 axes.spines.bottom: True
 axes.spines.left: True
 axes.spines.right: False
@@ -72,6 +72,7 @@ boxplot.whiskerprops.linestyle: -
 boxplot.whiskerprops.linewidth: 0.8
 
 contour.corner_mask: True
+contour.linewidth: 0.8
 contour.negative_linestyle: dashed
 
 errorbar.capsize: 2.4
@@ -137,12 +138,12 @@ lines.color: "#606060"
 lines.dash_capstyle: round
 lines.dash_joinstyle: round
 lines.linestyle: -
-lines.linewidth: 1.2
+lines.linewidth: 1.6
 lines.marker: None
 lines.markeredgecolor: auto
 lines.markeredgewidth: 0.0
 lines.markerfacecolor: auto
-lines.markersize: 3.2
+lines.markersize: 4.0
 lines.scale_dashes: True
 lines.solid_capstyle: round
 lines.solid_joinstyle: round

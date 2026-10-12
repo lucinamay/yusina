@@ -79,12 +79,40 @@ def _register_cmap() -> None:
 _register_cmap()
 
 
-def outline(colour, lightness: float = 0.75, saturation: float = 1.3) -> str:
-    """Edge colour for a fill: same hue, darker and more saturated. Hex string
-    so ``generate`` quotes it in the .mplstyle."""
+def luminance(colour) -> float:
+    """Relative (WCAG) luminance of *colour*; white = 1, black = 0."""
+    import numpy as np
+    from matplotlib.colors import to_rgb
+
+    c = np.asarray(to_rgb(colour))
+    lin = np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
+    return float(lin @ [0.2126, 0.7152, 0.0722])
+
+
+def readable(colour, max_luminance: float = 0.3) -> str:
+    """*colour* as text on the canvas: darkened with ``outline`` until its luminance is at
+    most *max_luminance* (0.3 = 3:1 on white), so a label in its mark's colour stays legible."""
+    from matplotlib.colors import to_hex
+
+    colour = to_hex(colour)
+    while luminance(colour) > max_luminance:
+        colour = outline(colour)
+    return colour
+
+
+def outline(colour, strength: str = "soft", lightness: float | None = None, saturation: float | None = None) -> str:
+    """Edge colour for a fill: same hue, darker and more saturated by ``tokens.EDGE[strength]``
+    ("soft" for edges that should still read as the fill, "strong" for lines that must stand
+    out on it); explicit *lightness* / *saturation* factors override. Hex string so
+    ``generate`` quotes it in the .mplstyle."""
     import colorsys
 
     from matplotlib.colors import to_hex, to_rgb
 
+    from yusina import tokens as t
+
+    factors = t.EDGE[strength]
+    lightness = factors["lightness"] if lightness is None else lightness
+    saturation = factors["saturation"] if saturation is None else saturation
     h, l, s = colorsys.rgb_to_hls(*to_rgb(colour))
     return to_hex(colorsys.hls_to_rgb(h, l * lightness, min(1.0, s * saturation)))
