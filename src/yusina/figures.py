@@ -276,9 +276,9 @@ def stacked_bar(categories, threshold: float = 0.0, ax=None, palette=None,
         items.insert(0, (other_label, small))
 
     keys = [k for k, _ in items]
-    colors = _resolve_colors(keys, palette)
-    if other_label in keys:
-        colors[keys.index(other_label)] = "lightgrey"
+    by_size = [k for k, _ in sorted(items, key=lambda kc: -kc[1]) if k != other_label]  # largest share takes the first colour,
+    ranked = dict(zip(by_size, _resolve_colors(by_size, palette)))                  # as the first series does in any stacked plot
+    colors = [ranked.get(k, "lightgrey") for k in keys]  # Other, pooled below threshold, in grey
 
     if ax is None:
         _, ax = plt.subplots(figsize=(3, 6))
@@ -288,11 +288,9 @@ def stacked_bar(categories, threshold: float = 0.0, ax=None, palette=None,
         share = count / total
         ax.bar(0, share, bottom=bottom, width=0.6, color=color, edgecolor="white")
         mid = bottom + share / 2
-        text_color = readable(color)  # the bar's own colour, darkened until 3:1 on white
-        label = ax.text(0.4, mid, cleanfmt(str(key)).capitalize(),
-                        va="center", ha="left", color=text_color, weight="bold")
+        label = mark_text(ax.text(0.4, mid, cleanfmt(str(key)).capitalize(), va="center", ha="left"), color)
         ax.annotate(f" ({share * 100:.1f}%)", (1, 0.5), xycoords=label,
-                    va="center", ha="left", color=text_color, weight="light")
+                    va="center", ha="left", color=label.get_color())  # regular weight: light was barely legible
         if share > 0.03:
             ax.text(0, mid, str(count), va="center", ha="center",
                     color="white", weight="bold")
@@ -557,8 +555,9 @@ def paper_figure(width: str = "single", height_ratio: float = 0.62, **subplots_k
 
 # ------------------------------------------------ insets, callouts, tables ----
 def _scale() -> float:
-    """Context scale of the active style (``set_style``'s *scale*)."""
-    return plt.rcParams["font.size"] / t.FONT_PT
+    from yusina.style import scale
+
+    return scale()
 
 
 def ridgeline(ax, grid, curves, colours=None, labels=None, alpha: float = 0.8, overlap: float = 1 / t.GOLDEN,
@@ -583,18 +582,97 @@ def ridgeline(ax, grid, curves, colours=None, labels=None, alpha: float = 0.8, o
     return fills
 
 
-def group_ticks(ax, colours, axis: str = "x", size: float | None = None, weight: str = "bold"):
-    """Tick labels as a pseudo-legend: each category label in its group's colour (darkened
-    until readable), bold, at *size* points (default ``axes.labelsize``). For strips, violins
-    and boxes whose positions already separate the groups; call after the tick labels are
-    set. One colour (a string) applies to every label: the quiet form for single-colour
-    bars is ink at ``legend.fontsize`` with ``weight="normal"``."""
+def mark_text(text, colour, size: float | None = None, weight: str = "bold"):
+    """*text* in the readable version of *colour* (its mark's), bold: value labels, wedge
+    labels, pseudo-legend ticks, stacked-bar labels all use this."""
+    text.set(color=readable(colour), fontweight=weight, **({"fontsize": size} if size is not None else {}))
+    return text
+
+
+def _mark_colours(ax, axis: str) -> list[tuple[float, str]]:
+    """(position along *axis*, colour) of every mark on *ax*: bars and box patches, scatter
+    and violin collections, box lines."""
+    i = 0 if axis == "x" else 1
+    out: list[tuple[float, str]] = []
+    for patch in ax.patches:
+        verts = patch.get_path().transformed(patch.get_patch_transform()).vertices
+        out.append((float(np.mean(verts[:, i])), mcolors.to_hex(patch.get_facecolor())))
+    for coll in ax.collections:
+        pts = coll.get_offsets() if len(coll.get_offsets()) else np.vstack([pth.vertices for pth in coll.get_paths()] or [np.full((1, 2), np.nan)])
+        face = coll.get_facecolor()
+        if len(pts) and len(face) and face[0][3] > 0:
+            out.append((float(np.nanmean(np.asarray(pts)[:, i])), mcolors.to_hex(face[0])))
+    for line in ax.lines:
+        xy = np.column_stack([line.get_xdata(), line.get_ydata()])
+        if len(xy) and line.get_linestyle() != "None":
+            out.append((float(np.nanmean(xy[:, i])), mcolors.to_hex(line.get_color())))
+    return [(pos, c) for pos, c in out if np.isfinite(pos)]
+
+
+def group_ticks(ax, axis: str = "x", colours=None, size: float | None = None, weight: str = "bold"):
+    """Tick labels as a pseudo-legend: each category label in the colour of the mark at its
+    position (bars, strips, violins, boxes), darkened until readable, bold, at *size* points
+    (default ``axes.labelsize``). *colours*: a list overrides the inference; one colour
+    (a string) applies to every label, the quiet form for single-colour bars being ink at
+    ``legend.fontsize`` with ``weight="normal"``. Call after the tick labels are set."""
     labels = getattr(ax, f"get_{axis}ticklabels")()
-    colours = [colours] * len(labels) if isinstance(colours, str) else colours
+    ticks = getattr(ax, f"get_{axis}ticks")()
+    if colours is None:
+        marks = _mark_colours(ax, axis)
+        colours = []
+        for pos in ticks:
+            near = [(abs(p - pos), c) for p, c in marks]
+            colours.append(min(near)[1] if near and min(near)[0] < 0.5 else t.INK)
+    elif isinstance(colours, str):
+        colours = [colours] * len(labels)
     size = plt.rcParams["axes.labelsize"] if size is None else size
     for label, c in zip(labels, colours):
-        label.set(color=readable(c), fontweight=weight, fontsize=size)
+        mark_text(label, c, size, weight)
     return labels
+
+
+def lollipop(ax, labels, values, colour=None, orientation: str = "horizontal"):
+    """Stems from zero to *values* with a marker at the end, one per label; stems at the box
+    edge width, markers ``1 / GOLDEN`` times the default. Returns the marker line."""
+    colour = colour or plt.rcParams["axes.prop_cycle"].by_key()["color"][0]
+    pos = np.arange(len(labels)); lw = t.LINEWIDTH["line"] * _scale(); ms = plt.rcParams["lines.markersize"] / t.GOLDEN
+    if orientation == "horizontal":
+        ax.hlines(pos, 0, values, color=colour, lw=lw)
+        (dots,) = ax.plot(values, pos, "o", color=colour, markersize=ms, linestyle="none")
+        ax.set(yticks=pos, yticklabels=list(labels))
+    else:
+        ax.vlines(pos, 0, values, color=colour, lw=lw)
+        (dots,) = ax.plot(pos, values, "o", color=colour, markersize=ms, linestyle="none")
+        ax.set(xticks=pos, xticklabels=list(labels))
+    return dots
+
+
+def dumbbell(ax, labels, before, after, colours=None, names=("before", "after")):
+    """Two markers per label joined by a RULE connector: a change between two states.
+    Markers ``1 / GOLDEN`` times the default; *names* go to the legend. Returns the two marker lines."""
+    cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]; c0, c1 = colours or cycle[:2]
+    pos = np.arange(len(labels)); ms = plt.rcParams["lines.markersize"] / t.GOLDEN
+    ax.hlines(pos, before, after, color=t.RULE, lw=t.LINEWIDTH["line"] * 1.25 * _scale())
+    (a,) = ax.plot(before, pos, "o", color=c0, label=names[0], markersize=ms, linestyle="none")
+    (b,) = ax.plot(after, pos, "o", color=c1, label=names[1], markersize=ms, linestyle="none")
+    ax.set(yticks=pos, yticklabels=list(labels))
+    return a, b
+
+
+def strip(ax, groups, labels=None, colours=None, means: bool = True, jitter: float = 0.08, seed: int = 0):
+    """Jittered dots per group, a short mean bar in the group's strong outline, and the group
+    labels as a pseudo-legend (``group_ticks``). *groups*: sequence of 1-d samples."""
+    rng = np.random.default_rng(seed)
+    cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]; colours = colours or [cycle[i % len(cycle)] for i in range(len(groups))]
+    for i, (d, c) in enumerate(zip(groups, colours)):
+        d = np.asarray(d, dtype=float)
+        ax.scatter(rng.normal(i, jitter, len(d)), d, s=plt.rcParams["lines.markersize"] ** 2 * 0.4, color=c, alpha=0.6, edgecolors="none")
+        if means:
+            ax.hlines(d.mean(), i - 0.25, i + 0.25, color=outline(c, "strong"), lw=t.LINEWIDTH["line"] * _scale())
+    ax.xaxis.grid(False)
+    ax.set(xticks=range(len(groups)), xticklabels=list(labels) if labels is not None else [str(i) for i in range(len(groups))])
+    group_ticks(ax, "x", colours)
+    return ax
 
 
 def erase_under(ax, bounds, extra=()):
@@ -614,13 +692,14 @@ def erase_under(ax, bounds, extra=()):
         verts += [(bx, by), (bx, by + bh), (bx + bw, by + bh), (bx + bw, by), (bx, by)]
     path = MplPath(verts, [MplPath.MOVETO, *[MplPath.LINETO] * 3, MplPath.CLOSEPOLY] * (len(rects) + 1))
     for artist in (*ax.lines, *ax.collections, *ax.patches, *ax.images, *ax.texts,
-                   *ax.xaxis.get_gridlines(), *ax.yaxis.get_gridlines()):
+                   *ax.xaxis.get_gridlines(), *ax.yaxis.get_gridlines(), *ax.__dict__.get("_yusina_connectors", [])):
         artist.set_clip_path(path, ax.transAxes)
 
 
 def inset_zoom(ax, xlim, ylim, bounds=(0.96 - (1 - t.GOLDEN), 0.96 - (1 - t.GOLDEN), 1 - t.GOLDEN, 1 - t.GOLDEN)):
-    """Inset axes on *ax* zoomed to *xlim* x *ylim*, no ticks, frame and connectors in
-    RULE; by default the minor golden section of the axes, top right. What *ax* already
+    """Inset axes on *ax* zoomed to *xlim* x *ylim*, no ticks, frame in RULE, the four
+    corner connectors dashed at half alpha, faded like the rest where they pass under the inset; by
+    default the minor golden section of the axes, top right. What *ax* already
     drew under the inset is erased, or faded by ``set_style(under=...)``; call after
     plotting on *ax*. Plot into the returned inset."""
     lw = t.LINEWIDTH["leader"] * _scale()
@@ -628,7 +707,11 @@ def inset_zoom(ax, xlim, ylim, bounds=(0.96 - (1 - t.GOLDEN), 0.96 - (1 - t.GOLD
     ins = ax.inset_axes(bounds, xlim=xlim, ylim=ylim, xticks=[], yticks=[])
     for spine in ins.spines.values():  # frame; a patch would be half-clipped by the axes box
         spine.set(visible=True, linewidth=lw, edgecolor=t.RULE)
-    ax.indicate_inset_zoom(ins, edgecolor=t.RULE, linewidth=lw, alpha=1)
+    indicator = ax.indicate_inset_zoom(ins, edgecolor=t.RULE, linewidth=lw, alpha=1)
+    for conn in indicator.connectors:  # all four corners, dashed and light; under the inset faded like everything else
+        conn.set(visible=True, linestyle=(0, (4, 3)), alpha=0.5, clip_on=True)  # clip_on: ConnectionPatch ignores clip paths otherwise
+    ax.__dict__.setdefault("_yusina_connectors", []).extend(indicator.connectors)
+    erase_under(ax, None)
     return ins
 
 

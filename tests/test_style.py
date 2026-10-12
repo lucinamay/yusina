@@ -185,6 +185,11 @@ def test_violin_defaults():
 
     assert hex3(body.get_facecolor()) == c0.lower() and body.get_zorder() == 1
     assert hex3(medians.get_colors()) == outline(c0, "strong")
+    from cycler import cycler
+
+    ax.set_prop_cycle(cycler(color=["#8E3B2E", "#2C5F8A"]))  # an axes cycle is respected
+    own = cast(list[PolyCollection], ax.violinplot([np.arange(10.0)])["bodies"])[0]
+    assert hex3(own.get_facecolor()) == "#8e3b2e"
     plt.close("all")
 
 

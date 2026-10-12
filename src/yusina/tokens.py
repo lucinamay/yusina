@@ -59,7 +59,9 @@ REGISTERS: dict[str, Register] = {
         "title_weight": "bold", "spine_lw": 0.0, "grid_alpha": 0.35, "mathtext": "dejavusans"},
     "formal": {
         "unicode_minus": True, "usetex": False,
-        "cycle": palette("seaborn colorblind"),  # journal figures
+        # Okabe & Ito 2008, the colour-universal palette journals cite: blue first (house rule: blue then orange),
+        # the yellow last since it is 1.3:1 on white and only earns a place as a fill between neighbours
+        "cycle": ["#0072B2", "#E69F00", "#009E73", "#D55E00", "#56B4E9", "#CC79A7", "#F0E442"],
         "sans": ["Helvetica Neue", "Helvetica", "Avenir Next", "DejaVu Sans"],
         "title_weight": "regular", "spine_lw": 0.8, "grid_alpha": 0.0, "mathtext": "dejavusans"},
     "latex": {

@@ -19,7 +19,7 @@ axes.labelpad: 3.2
 axes.labelsize: 10.0
 axes.labelweight: regular
 axes.linewidth: 0.64
-axes.prop_cycle: cycler('color', ['0173B2', 'DE8F05', '029E73', 'D55E00', 'CC78BC', 'CA9161', 'FBAFE4', '949494', 'ECE133', '56B4E9']) + cycler('linestyle', ['-', '-.', (5, (10, 3)), ':', '--', (0, (3, 1.5, 1, 1.5, 1, 1.5)), '-', '-.', (5, (10, 3)), ':'])
+axes.prop_cycle: cycler('color', ['0072B2', 'E69F00', '009E73', 'D55E00', '56B4E9', 'CC79A7', 'F0E442']) + cycler('linestyle', ['-', '-.', (5, (10, 3)), ':', '--', (0, (3, 1.5, 1, 1.5, 1, 1.5)), '-'])
 axes.spines.bottom: True
 axes.spines.left: True
 axes.spines.right: False
@@ -36,28 +36,28 @@ axes.zmargin: 0.05
 
 axes3d.grid: True
 
-boxplot.boxprops.color: "#005686"
+boxplot.boxprops.color: "#005585"
 boxplot.boxprops.linestyle: -
 boxplot.boxprops.linewidth: 0.8
-boxplot.capprops.color: "#005686"
+boxplot.capprops.color: "#005585"
 boxplot.capprops.linestyle: -
 boxplot.capprops.linewidth: 0.8
 boxplot.flierprops.linestyle: none
 boxplot.flierprops.linewidth: 0.8
 boxplot.flierprops.marker: o
-boxplot.flierprops.markeredgecolor: "#005686"
+boxplot.flierprops.markeredgecolor: "#005585"
 boxplot.flierprops.markeredgewidth: 0.8
-boxplot.flierprops.markerfacecolor: "#0173B2"
+boxplot.flierprops.markerfacecolor: "#0072B2"
 boxplot.flierprops.markersize: 2.4
 boxplot.meanline: False
-boxplot.meanprops.color: "#005686"
+boxplot.meanprops.color: "#005585"
 boxplot.meanprops.linestyle: --
 boxplot.meanprops.linewidth: 0.8
 boxplot.meanprops.marker: ^
-boxplot.meanprops.markeredgecolor: "#005686"
-boxplot.meanprops.markerfacecolor: "#0173B2"
+boxplot.meanprops.markeredgecolor: "#005585"
+boxplot.meanprops.markerfacecolor: "#0072B2"
 boxplot.meanprops.markersize: 2.4
-boxplot.medianprops.color: "#005686"
+boxplot.medianprops.color: "#005585"
 boxplot.medianprops.linestyle: -
 boxplot.medianprops.linewidth: 0.8
 boxplot.notch: True
@@ -67,7 +67,7 @@ boxplot.showcaps: True
 boxplot.showfliers: True
 boxplot.showmeans: False
 boxplot.vertical: True
-boxplot.whiskerprops.color: "#005686"
+boxplot.whiskerprops.color: "#005585"
 boxplot.whiskerprops.linestyle: -
 boxplot.whiskerprops.linewidth: 0.8
 
@@ -154,8 +154,8 @@ mathtext.default: regular
 mathtext.fontset: dejavusans
 
 patch.antialiased: True
-patch.edgecolor: "#005686"
-patch.facecolor: "#0173B2"
+patch.edgecolor: "#005585"
+patch.facecolor: "#0072B2"
 patch.force_edgecolor: False
 patch.linewidth: 0.0
 

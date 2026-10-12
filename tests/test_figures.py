@@ -158,8 +158,12 @@ def test_ridgeline_reset():
 def test_group_ticks():
     _, ax = plt.subplots()
     ax.set(xticks=[0, 1], xticklabels=["a", "b"])
-    labels = f.group_ticks(ax, ["#2C5F8A", "#FFD700"])
+    labels = f.group_ticks(ax, "x", ["#2C5F8A", "#FFD700"])
     assert labels[0].get_color() == "#2c5f8a" and labels[1].get_color() != "#ffd700" and labels[0].get_fontweight() == "bold"
+    ax.bar([0, 1], [1, 2], color=["#2C5F8A", "#8E3B2E"])  # inferred from the marks at each tick
+    assert [lab.get_color() for lab in f.group_ticks(ax)] == ["#2c5f8a", "#8e3b2e"]
+    ax.scatter([5, 5, 5], [1, 2, 3], color="#1A4C32"); ax.set(xticks=[0, 1, 5], xticklabels=["a", "b", "c"])
+    assert f.group_ticks(ax)[2].get_color() == "#1a4c32"
     plt.close("all")
 
 
