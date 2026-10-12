@@ -49,9 +49,11 @@ def _arg_scale(a):
 
 def lines(ax):
     x = np.linspace(0, 10, 40)
-    for i in range(4):
-        ax.plot(x, np.sin(x + i) + i * 0.3, marker="o", label=f"series {i}")
-    ax.set(title="lines + markers", xlabel="time (s)", ylabel="signal")
+    for i in range(4):  # markers are measurements, the line is the fit: no markers on a fit
+        xm = x[i::5]
+        ax.plot(x, np.sin(x + i) + i * 0.3, label=f"series {i}")
+        ax.plot(xm, np.sin(xm + i) + i * 0.3 + rng.normal(0, 0.08, len(xm)), marker="o", linestyle="none", color=ax.lines[-1].get_color())
+    ax.set(title="fits + measured points", xlabel="time (s)", ylabel="signal")
     ax.legend(title="key")
 
 
@@ -259,22 +261,21 @@ def hist2d(ax):
 # -------------------------------------------------------- distributions ----
 def violins(ax):
     data = [rng.normal(i, 0.6 + 0.2 * i, 120) for i in range(4)]
-    parts = ax.violinplot(data, showmedians=True, showextrema=False)
-    for body, c in zip(parts["bodies"], _cycle()):
-        body.set_facecolor(c); body.set_edgecolor(outline(c)); body.set_alpha(0.7)
-    parts["cmedians"].set_color(t.INK)
+    ax.violinplot(data, showmedians=True, showextrema=False)  # cycle fills, contour-edge medians, bodies under the dots
     for i, (d, c) in enumerate(zip(data, _cycle())):
         ax.scatter(rng.normal(i + 1, 0.04, len(d)), d, s=4, color=outline(c), alpha=0.5, edgecolors="none")
     ax.set(title="violin + strip", xticks=range(1, 5), xticklabels=list("abcd"), ylabel="value")
+    figures.group_ticks(ax, _cycle()[:4])
 
 
 def strip(ax):
     for i, c in enumerate(_cycle()[:5]):
         d = rng.normal(i * 0.5, 1, 60)
         ax.scatter(rng.normal(i, 0.08, len(d)), d, s=10, color=c, alpha=0.6, edgecolors="none")
-        ax.plot([i - 0.25, i + 0.25], [d.mean()] * 2, color=outline(c), lw=2)
+        ax.hlines(d.mean(), i - 0.25, i + 0.25, color=outline(c), lw=2)  # hlines: a mark, not a series, so no dash cycle
     ax.xaxis.grid(False)
     ax.set(title="strip + mean", xticks=range(5), xticklabels=list("abcde"), ylabel="value")
+    figures.group_ticks(ax, _cycle()[:5])  # the x labels are the legend here
 
 
 def kde(ax):
@@ -289,17 +290,14 @@ def kde(ax):
 
 def ridgeline(ax):
     grid = np.linspace(-4, 10, 300)
-    for i, c in enumerate(_cycle()[:5]):
-        d = _kde(rng.normal(i * 1.2, 1, 150), grid)
-        d = d / d.max() * 1.4
-        ax.fill_between(grid, i, i + d, color=c, alpha=0.8, lw=0, zorder=5 - i)
-        ax.plot(grid, i + d, color=outline(c), lw=0.8, zorder=5 - i)
-    ax.set(title="ridgeline", yticks=range(5), yticklabels=[f"day {i}" for i in range(5)], xlabel="value")
+    curves = [_kde(rng.normal(i * 1.2, 1, 150), grid) for i in range(5)]
+    figures.ridgeline(ax, grid, curves, labels=[f"day {i}" for i in range(5)], reset=True)  # alpha over the canvas, not over the ridge behind
+    ax.set(title="ridgeline (reset=True)", xlabel="value")
 
 
 def hist_overlay(ax):
     for i, c in enumerate(_cycle()[:3]):
-        ax.hist(rng.normal(i, 1, 400), bins=30, histtype="stepfilled", color=c, alpha=0.4, ec=outline(c), label=f"g{i}")
+        ax.hist(rng.normal(i, 1, 400), bins=30, histtype="stepfilled", color=c, alpha=0.4, outline=True, label=f"g{i}")
     ax.legend()
     ax.set(title="overlaid histograms", xlabel="value", ylabel="count")
 
@@ -324,9 +322,9 @@ def grouped_bars(ax):
     w = 0.8 / groups
     for g, c in enumerate(_cycle()[:groups]):
         vals = rng.integers(3, 10, len(cats))
-        ax.bar(np.arange(len(cats)) + (g - 1) * w, vals, w, yerr=rng.random(len(cats)), capsize=2, color=c, label=f"group {g}")
+        ax.bar(np.arange(len(cats)) + (g - 1) * w, vals, w, color=c, label=f"group {g}")  # no error caps: a bar with uncertainty wants another plot type
     ax.legend()
-    ax.set(title="grouped bars + error caps", xticks=range(len(cats)), xticklabels=cats, ylabel="count")
+    ax.set(title="grouped bars", xticks=range(len(cats)), xticklabels=cats, ylabel="count")
 
 
 def stacked(ax):
@@ -343,30 +341,32 @@ def barh(ax):
     vals = np.sort(rng.integers(5, 50, 8))
     labels = [f"item {i}" for i in range(8)]
     bars_ = ax.barh(labels, vals, color=_cycle()[0])
-    ax.bar_label(bars_, padding=3)
+    ax.bar_label(bars_, padding=3)  # the bar's colour, bold, GOLDEN of the bar height tall
     ax.set(title="horizontal bars + value labels", xlabel="value", xlim=(0, 58))
+    figures.group_ticks(ax, t.INK, axis="y", size=plt.rcParams["legend.fontsize"], weight="normal")  # the y labels are the legend: legend size, no colour, no bold
 
 
 def lollipop(ax):
     vals = np.sort(rng.random(10))
     y = np.arange(10)
-    ax.hlines(y, 0, vals, color=_cycle()[0], lw=1)
-    ax.plot(vals, y, "o", color=_cycle()[0])
+    ax.hlines(y, 0, vals, color=_cycle()[0], lw=2)
+    ax.plot(vals, y, "o", color=_cycle()[0], markersize=plt.rcParams["lines.markersize"] * 1.6, linestyle="none")
     ax.set(title="lollipop", yticks=y, yticklabels=[f"gene {i}" for i in y], xlabel="score")
 
 
 def dumbbell(ax):
     y = np.arange(7); before = rng.random(7); after = before + rng.normal(0.2, 0.15, 7)
     c0, c1 = _cycle()[:2]
-    ax.hlines(y, before, after, color=t.INK, lw=1, alpha=0.5)
-    ax.plot(before, y, "o", color=c0, label="before"); ax.plot(after, y, "o", color=c1, label="after")
+    ax.hlines(y, before, after, color=t.RULE, lw=2.5)
+    ms = plt.rcParams["lines.markersize"] * 1.6
+    ax.plot(before, y, "o", color=c0, label="before", markersize=ms, linestyle="none"); ax.plot(after, y, "o", color=c1, label="after", markersize=ms, linestyle="none")
     ax.legend()
     ax.set(title="dumbbell", yticks=y, yticklabels=[f"site {i}" for i in y], xlabel="value")
 
 
 def pie_donut(ax):
     vals = [35, 25, 20, 12, 8]
-    ax.pie(vals, labels=[f"c{i}" for i in range(5)], colors=_cycle()[:5], wedgeprops={"width": 0.45, "lw": 0}, startangle=90)
+    ax.pie(vals, labels=[f"c{i}" for i in range(5)], colors=_cycle()[:5], wedgeprops={"width": 1 - t.GOLDEN, "lw": 0}, startangle=90)  # ring = the minor golden section of the radius
     ax.set(title="donut: adjacent planes")
 
 
@@ -410,7 +410,7 @@ def contours(ax):
     x, y = np.meshgrid(np.linspace(-3, 3, 80), np.linspace(-3, 3, 80))
     z = np.exp(-(x**2 + y**2) / 2) - 0.6 * np.exp(-((x - 1.5)**2 + (y + 1)**2))
     cf = ax.contourf(x, y, z, levels=12, cmap=t.CMAP)
-    ax.contour(x, y, z, levels=12, colors=t.INK, linewidths=0.4)
+    ax.contour(x, y, z, levels=12)  # lines take the darker edge of each level's fill, width from contour.linewidth
     ax.figure.colorbar(cf, ax=ax, label="z")
     ax.set(title="contourf + contour", xlabel="x", ylabel="y")
 
@@ -418,8 +418,8 @@ def contours(ax):
 def quiver(ax):
     x, y = np.meshgrid(np.linspace(-2, 2, 14), np.linspace(-2, 2, 14))
     u, v = -y, x
-    ax.quiver(x, y, u, v, np.hypot(u, v), cmap=t.CMAP, scale=40, width=0.004)
-    ax.streamplot(x, y, u, v, color=t.INK, linewidth=0.4, density=0.6, arrowsize=0.6)
+    ax.quiver(x, y, u, v, np.hypot(u, v), cmap=t.CMAP, scale=40)  # shaft and head from tokens.ARROWS
+    ax.streamplot(x, y, u, v, density=0.6)  # RULE grey from tokens.ARROWS: a background under the coloured quiver
     ax.set(title="quiver + streamplot", xlabel="x", ylabel="y", aspect="equal")
 
 
@@ -490,7 +490,7 @@ def scatter3d(ax):
 
 def sankey(ax):
     import polars as pl
-    df = pl.DataFrame({"src": rng.choice(list("ab"), 80), "mid": rng.choice(np.array(["x", "y", None], dtype=object), 80), "dst": rng.choice(list("pq"), 80)})
+    df = pl.DataFrame({"src": rng.choice(list("ab"), 80), "mid": rng.choice(np.array(["x", "y", None], dtype=object), 80).tolist(), "dst": rng.choice(list("pq"), 80)})  # mid as a list: polars types an object array by its first element
     backends.plotly_template(1.0, _REGISTER[0])
     fig = figures.sankey(df, ["src", "mid", "dst"], title="sankey")
     fig.update_layout(width=500, height=380)
