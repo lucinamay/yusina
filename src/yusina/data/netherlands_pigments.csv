@@ -1,0 +1,31 @@
+name,en,hex,kind,asset,note
+delfts blauw 1,delft blue 1,#9EA2B2,glaze,delft_plate_1921,"cobalt on tin glaze, stop 1 of the `delft` colormap read off the plate"
+delfts blauw 2,delft blue 2,#68708E,glaze,delft_plate_1921,"cobalt on tin glaze, stop 2 of the `delft` colormap read off the plate"
+delfts blauw 3,delft blue 3,#4A5479,glaze,delft_plate_1921,"cobalt on tin glaze, stop 3 of the `delft` colormap read off the plate"
+delfts blauw 4,delft blue 4,#2F3862,glaze,delft_plate_1921,"cobalt on tin glaze, stop 4 of the `delft` colormap read off the plate"
+delfts blauw 5,delft blue 5,#1C244D,glaze,delft_plate_1921,"cobalt on tin glaze, stop 5 of the `delft` colormap read off the plate"
+delfts blauw 6,delft blue 6,#10153B,glaze,delft_plate_1921,"cobalt on tin glaze, stop 6 of the `delft` colormap read off the plate"
+tinglazuur,tin-glaze white,#F3EFE6,glaze,,achromatic: standard white
+chroomgeel,chrome yellow,#D0A633,oil,vangogh_sunflowers,the sunflowers' yellow
+oker,ochre,#A6730A,oil,vangogh_bedroom,the bed and chairs
+oranje,orange,#C47E39,oil,vangogh_sunflowers,sunflower centres
+kobaltblauw,cobalt blue,#6186A8,oil,vangogh_bedroom,the walls
+ultramarijn,ultramarine,#424E85,oil,vangogh_bedroom,the door
+smaragdgroen,emerald green,#1A4C32,oil,vangogh_bedroom,the window
+vermiljoen,vermilion,#943A33,oil,vangogh_bedroom,the blanket
+olijf,olive,#8B8029,oil,vangogh_bedroom,the floor
+lamplicht,lamplight,#B5AD65,oil,vangogh_potato_eaters,the lamp and faces
+aardappeloker,potato ochre,#CBA261,oil,vangogh_potato_eaters,
+groenzwart,green-black,#31533B,oil,vangogh_potato_eaters,the shadows
+weversbruin,weaver brown,#6E5B2C,oil,vangogh_weaver,the loom
+roodbruin,red-brown,#A54F2A,oil,vangogh_weaver,the cloth on the loom
+weversgroen,weaver green,#5C7851,oil,vangogh_weaver,
+roet,soot,#211F1E,oil,,achromatic: standard black
+Mondriaan rood,Mondrian red,#DF2826,oil,mondrian_composition_ii_1930,
+Mondriaan blauw,Mondrian blue,#005D9F,oil,mondrian_composition_ii_1930,
+Mondriaan geel,Mondrian yellow,#F1D96A,oil,mondrian_composition_ii_1930,
+Vermeer ultramarijn,Vermeer ultramarine,#183D70,oil,vermeer_milkmaid,"the skirt, natural ultramarine"
+loodtingeel,lead-tin yellow,#D1AE6B,oil,vermeer_milkmaid,the bodice
+broodoker,bread ochre,#986743,oil,vermeer_milkmaid,
+meekraprood,madder red,#7C4135,oil,vermeer_milkmaid,the overskirt
+kalkwit,lime white,#D0CE7E,oil,vermeer_milkmaid,the wall in light

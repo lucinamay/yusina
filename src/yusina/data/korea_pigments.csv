@@ -1,0 +1,41 @@
+name,roman,hex,kind,note
+주사,jusa,#C0362C,paint,cinnabar vermilion (朱砂); the red of suns and seals
+장단,jangdan,#D64B2B,paint,"red lead / minium (鉛丹); orange-red; was #D8634F (red lead is orange-red, L~45-50; the MMCA 장단색 #D8634F is a lighter coral (dE 18))"
+석간주,seokganju,#8E3B2E,paint,iron-oxide red (石間硃); trunks and grounds
+연지,yeonji,#CB4A6A,paint,rouge from safflower (臙脂); pinks of flowers; was #DE6D8B (rouge lake as a pigment is crimson L~45; #DE6D8B was the thin-wash pink)
+육색,yuksaek,#D88266,paint,flesh tint: jangdan + white
+황토,hwangto,#C08A3E,paint,yellow ochre (黃土)
+자황,jahwang,#E9B93C,paint,"orpiment (雌黃); bright yellow; was #ECCA56 (orpiment is golden (b*~68, a*~+10), not lemon)"
+치자,chija,#F2D569,paint,gardenia yellow (梔子); glazes
+석청,seokcheong,#2C5F8A,paint,azurite (石靑); deep blue of peaks and skies
+삼청,samcheong,#5F93CF,paint,azurite lightened with white (三靑); pigment-swatch value since the MMCA 삼청색 #6B7ABB leans violet
+군청,guncheong,#26478F,paint,"ultramarine (群靑) synthetic since the 19th c.; pigment-swatch value since the MMCA 군청색 #555790 is a greyed violet-blue; was #2B3F8C (natural ultramarine a*~2-8, not the violet-leaning a*19)"
+석록,seokrok,#6E9E66,paint,"malachite (石綠); greens of peaks and leaves; was #3F8A5B (ground malachite is a soft grey-green, L~60 a~-25; #3F8A5B was too dark and saturated (dE 17))"
+하엽,hayeop,#566D52,paint,lotus-leaf dark green (荷葉)
+뇌록,noerok,#626D5E,paint,"celadonite grey-green (磊綠); grounds; was #5E7355 (celadonite measures a* near 0 (보존과학회지 2008/2015), greyer than #5E7355)"
+양록,yangnok,#3F9E5A,paint,emerald/Paris green (洋綠); 19th c. import; was #50BA6E (emerald/Paris green L~50-58; #50BA6E was too light)
+자색,jasaek,#904464,paint,purple from rouge over indigo
+호분,hobun,#F3EFE6,paint,oyster-shell white (胡粉)
+먹,meok,#211F1E,paint,ink (墨)
+홍,hong,#EA577B,dye,safflower red (紅花) on silk
+쪽,jjok,#495C7F,dye,indigo (藍) on silk
+자초,jacho,#845B92,dye,gromwell purple (紫草) on silk
+치자염,chijayeom,#E9C23E,dye,"gardenia yellow on silk; was #F2D569 (gardenia on silk gives a rich gold, not pale lemon)"
+괴화,goehwa,#7AAD4C,dye,pagoda-tree green-yellow (槐花) with indigo
+소목,somok,#B5574D,dye,sappanwood red-brown (蘇木)
+연홍,yeonhong,#F1BDCC,dye,light safflower pink on silk (연분홍)
+옥색,oksaek,#9EDCDD,dye,light indigo on silk; jade
+송화,songhwa,#EEF18D,dye,pine-pollen yellow on silk
+소색,sosaek,#ECDABB,dye,undyed silk (素色); the fibre itself
+현,hyeon,#2C2C2C,dye,black silk (玄)
+연분,yeonbun,#F5F2EA,paint,lead white (鉛粉); the white of 17th-19th c. paintings
+회청,hoecheong,#2F3F78,paint,"smalt (回靑); the blue that replaced azurite from the 18th c.; was #4A6FA5 (smalt is a deep violet-blue, L~24-28; #4A6FA5 was a mid blue (dE 25))"
+밀타승,miltaseung,#D9B14A,paint,litharge yellow (密陀僧)
+등황,deunghwang,#E8B11C,paint,gamboge (藤黃); organic yellow glaze
+금,geum,#C9A24B,paint,gold leaf and gold paint (金); accents in decorative paintings
+양청,yangcheong,#1B3A5C,paint,Prussian blue (洋靑); late 19th c. import
+분홍,bunhong,#EBA18B,paint,"pink, 장단 + 호분 (장단육색); the 초빛 of the red 빛 ladder"
+백록,baengnok,#9EC79F,paint,"pale green, 양록 + 호분 (삼록); the 초빛 of the green 빛 ladder"
+분삼청,bunsamcheong,#A9C1DC,paint,"pale blue, 삼청 + 호분; the 초빛 of the blue 빛 ladder"
+주홍,juhong,#C0362C,paint,vermilion red (朱紅); dancheong name for the cinnabar step
+다자,daja,#562F27,paint,"dark brown-red, 석간주 + 먹; the deep step of the red 빛 ladder"

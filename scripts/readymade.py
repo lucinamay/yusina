@@ -1,6 +1,6 @@
 """Render the ``yusina.palettes`` catalogue, one sheet per hue scheme ([pick] = maintainer favourite).
 
-    python scripts/readymade.py          # writes gallery/catalogue_<scheme>.png
+    python scripts/readymade.py          # writes gallery/catalogue_<scheme>.png and gallery/collections/<name>/catalogue.png
 """
 import sys
 import textwrap
@@ -37,15 +37,15 @@ def sheet(palettes, out):
         for i, c in enumerate(pal): sw.add_patch(Rectangle((i, 0.35), 1, 1, color=c)); sw.add_patch(Rectangle((i, 0), 1, 0.3, color=luma(c)))
         sw.set_xlim(0, max(len(pal), 8)); sw.set_ylim(0, 1.35); sw.axis("off"); sw.set_title(name, loc="left", fontsize=9)
         for m, ax in zip((2, 3, 4), (a2, a3, a4)):
-            for i in range(m): ax.plot(x, np.sin(x / 2 + i * 0.9) + 0.3 * i, color=pal[i], lw=2)
+            for i in range(m): ax.plot(x, np.sin(x / 2 + i * 0.9) + 0.3 * i, color=pal[i % len(pal)], lw=2)
         for i in range(min(4, len(pal))):
-            bw.plot(x, np.sin(x / 2 + i * 0.9) + 0.3 * i, color=luma(pal[i]), lw=2)
-            al.plot(x, np.sin(x / 2 + i * 0.9) + 0.3 * i, color=pal[i], lw=2, alpha=0.4)
-            sc.scatter(rng.normal(i, 0.7, 40), rng.normal(i % 2, 0.7, 40), color=pal[i], s=14, alpha=0.5)
+            bw.plot(x, np.sin(x / 2 + i * 0.9) + 0.3 * i, color=luma(pal[i % len(pal)]), lw=2)
+            al.plot(x, np.sin(x / 2 + i * 0.9) + 0.3 * i, color=pal[i % len(pal)], lw=2, alpha=0.4)
+            sc.scatter(rng.normal(i, 0.7, 40), rng.normal(i % 2, 0.7, 40), color=pal[i % len(pal)], s=14, alpha=0.5)
         bar.bar(range(len(pal)), 3 + rng.integers(0, 3, len(pal)), color=pal)
         bottom = np.zeros(5)
         for i in range(min(4, len(pal))):
-            v = 1 + rng.integers(0, 3, 5); st.bar(range(5), v, bottom=bottom, color=pal[i], width=0.8); bottom += v
+            v = 1 + rng.integers(0, 3, 5); st.bar(range(5), v, bottom=bottom, color=pal[i % len(pal)], width=0.8); bottom += v
         ar.stackplot(x, [np.sin(x / 3 + i) + 1.5 for i in range(min(4, len(pal)))], colors=pal[:4], lw=0)
         for ax in (a2, a3, a4, bw, bar, sc, al, st, ar): ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
     for ax, t in zip(axs[0, 1:W], ["2 series", "3 series", "4 series", "4 in B/W", "bars", "scatter α=.5", "lines α=.4", "stacked bars", "stacked area"]): ax.set_title(t, fontsize=9)
@@ -58,3 +58,7 @@ if __name__ == "__main__":
         # note wrapped under the name: a long title widens column 0 and tight_layout squeezes the rest
         pals = {("[pick] " if P.PALETTES[n]["pick"] else "") + n + (f"\n{textwrap.fill(P.PALETTES[n]['note'], 36)}" if P.PALETTES[n]["note"] else ""): P.PALETTES[n]["colours"] for n in names}
         sheet(pals, GALLERY / f"catalogue_{sch}.png")
+    for coll, names in P.by_collection().items():
+        pals = {n + (f"\n{textwrap.fill(P.PALETTES[n]['note'], 36)}" if P.PALETTES[n]["note"] else ""): P.PALETTES[n]["colours"] for n in names}
+        out = GALLERY / "collections" / coll.lower() / "catalogue.png"; out.parent.mkdir(parents=True, exist_ok=True)
+        sheet(pals, out)

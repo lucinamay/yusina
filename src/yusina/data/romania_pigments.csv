@@ -1,0 +1,38 @@
+name,en,hex,kind,asset,note
+azurit,azurite,#55829E,fresco,voronet_last_judgement,"albastru de Voroneț: azurite (pXRF/FTIR), the wall's blue family"
+ocru roșu,red ochre,#8D4638,fresco,sucevita_murals,the red-brown ground at Sucevița and Humor
+ocru galben,yellow ochre,#B69770,fresco,voronet_last_judgement,haloes and ground of Moldovița
+pământ verde,green earth,#597C56,fresco,voronet_last_judgement,"green earth (celadonite), the standard fresco green"
+albastru închis,dark blue,#5A6F97,fresco,voronet_last_judgement,the darker blue family of the wall (garments); smalt was found at Sucevița
+alb de var,lime white,#F3EFE6,fresco,,"achromatic: standard white, same as korea_pigments 호분"
+negru,carbon black,#211F1E,fresco,,"achromatic: standard black, same as korea_pigments 먹"
+ivoriu de Horezu,Horezu ivory,#D5D8D3,glaze,horezu_plates,the slip ground of the plates
+brun,brown,#745030,glaze,horezu_plates,manganese/iron brown of the motifs
+cobalt,cobalt blue,#4F608E,glaze,horezu_plates,cobalt glaze
+bleu,light blue,#6C99BC,glaze,horezu_plates,thinned cobalt
+verde de cupru,copper green,#61734A,glaze,horezu_plates,copper glaze
+roșu de zadie,zadie red,#A80D25,dye,maramures_costume_zadie,"synthetic-dyed wool, striped apron"
+verde de zadie,zadie green,#005D1E,dye,maramures_costume_zadie,"synthetic-dyed wool, striped apron"
+mărgele albastre,blue beads,#3780A4,bead,maramures_zgardan,glass beads of the zgărdan
+mărgele galbene,yellow beads,#CEA90E,bead,maramures_zgardan,
+mărgele roz,pink beads,#DF1C64,bead,maramures_zgardan,
+mărgele violet,violet beads,#A187D9,bead,maramures_zgardan,
+mărgele bleu,periwinkle beads,#889BE3,bead,maramures_zgardan,
+mărgele jad,jade beads,#3FB38D,bead,maramures_zgardan,
+roz de roibă,madder pink,#D45A78,wool,oltenia_carpet_detail,"natural-dyed wool, late 18th-c. Oltenia rug; dye per colour not analysed"
+indigo,indigo,#3E4975,wool,oltenia_carpet_detail,
+galben de rezedă,weld yellow,#D7B564,wool,oltenia_carpet_detail,
+mov,mauve,#985981,wool,oltenia_carpet_detail,
+albastru de lână,wool blue,#3C6891,wool,oltenia_carpet_detail,
+piersică,peach,#DDA97C,wool,oltenia_carpet_detail,
+albastru de Săpânța,Săpânța blue,#2159A6,paint,sapanta_crosses,"the Pătraș workshop blue, oil paint on oak"
+roșu de Săpânța,Săpânța red,#832210,paint,sapanta_crosses,
+galben de Săpânța,Săpânța yellow,#A09642,paint,sapanta_crosses,
+verde de Săpânța,Săpânța green,#71943A,paint,sapanta_crosses,
+turcoaz de Săpânța,Săpânța turquoise,#3EA1AE,paint,sapanta_crosses,
+ocru de Săpânța,Săpânța ochre,#A88348,paint,sapanta_crosses,
+albastru săsesc,Saxon blue,#24638E,paint,zagar_saxon_dresser,the blue ground of Transylvanian Saxon painted furniture
+roșu săsesc,Saxon red,#7B3C45,paint,zagar_saxon_dresser,
+albastru închis săsesc,Saxon dark blue,#344573,paint,zagar_saxon_dresser,
+verde-albastru săsesc,Saxon teal,#3A7281,paint,zagar_saxon_dresser,
+cărămiziu săsesc,Saxon brick,#783B29,paint,zagar_saxon_dresser,

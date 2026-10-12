@@ -31,18 +31,49 @@ colourDict = {
 
 
 
+# 단청 바림(빛) ladders, 초빛 -> 2빛 -> 3빛 -> 먹: the 초빛 is the pigment mixed with 호분,
+# then the pigment, then its deep step; values from korea_pigments.csv.
+DANCHEONG_BARIM = {
+    "red": ['#EBA18B', '#D64B2B', '#C0362C', '#562F27'],    # 분홍 장단 주홍 다자
+    "green": ['#9EC79F', '#3F9E5A', '#566D52', '#211F1E'],  # 백록(삼록) 양록 하엽 먹
+    "blue": ['#A9C1DC', '#5F93CF', '#26478F', '#211F1E'],   # 분삼청 삼청 군청 먹
+}
+
+# every continuous map yusina registers: name -> (stops light -> dark, collection or "")
+CMAPS: dict[str, tuple[list[str], str]] = {
+    # white, then the biosynthetic-distance steps: YlGnBu with its yellow end replaced by white
+    "yusina": (["#FFFFFF"] + [colourDict["continuous"][k] for k in ("10", "4", "3", "2", "1")], ""),
+    **{f"dancheong_{hue}": (steps, "Korea") for hue, steps in DANCHEONG_BARIM.items()},
+    # 자수 바림: thread shading runs through several dyes (korea_pigments.csv), light -> deep,
+    # changing hue on the way; stops interpolated in OKLab with palettes.through, nothing sampled from photographs
+    "silk_petal": (['#ecdabb', '#efccc4', '#f1bdcc', '#f08da3', '#ea577b', '#b75d88', '#845b92'], "Korea"),  # 꽃잎: 소색 → 연홍 → 홍 → 자초
+    "silk_leaf": (['#eef18d', '#c7da77', '#a1c361', '#7aad4c', '#689266', '#577875', '#495c7f'], "Korea"),  # 잎: 송화 → 괴화 → 쪽
+    "silk_cloud": (['#ecdabb', '#efccc4', '#f1bdcc', '#b98baf', '#845b92', '#685c88', '#495c7f'], "Korea"),  # 구름: 소색 → 연홍 → 자초 → 쪽 (흉배의 구름 띠)
+    "silk_feather": (['#ecdabb', '#c7dccd', '#9edcdd', '#729aad', '#495c7f', '#3a4454', '#2c2c2c'], "Korea"),  # 학 깃·하늘: 소색 → 옥색 → 쪽 → 현
+    "delft": (['#F3EFE6', '#9EA2B2', '#68708E', '#4A5479', '#2F3862', '#1C244D', '#10153B'], "Netherlands"),  # tin-glaze white, then the cobalt washes of a Rijksmuseum plate, OKLab-interpolated
+    "silk_osaek": (['#ea577b', '#f3ae73', '#cbc85f', '#7aad4c', '#577875', '#5e5c85', '#845b92'], "Korea"),  # 오색 띠 (흉배 물결·바위): 홍 → 치자 → 괴화 → 쪽 → 자초
+}
+
+
+def cmaps_by_collection() -> dict[str, list[str]]:
+    """{collection: [cmap names]} for every map in ``CMAPS`` that has a collection."""
+    out: dict[str, list[str]] = {}
+    for name, (_, coll) in CMAPS.items():
+        if coll:
+            out.setdefault(coll, []).append(name)
+    return out
+
+
 def _register_cmap() -> None:
-    """``"yusina"``: white, then the biosynthetic-distance steps pale -> dark, as a
-    continuous map. YlGnBu with its yellow end replaced by white."""
     import matplotlib as mpl
     from matplotlib.colors import LinearSegmentedColormap
 
     if "yusina" in mpl.colormaps:
         return
-    steps = ["#FFFFFF"] + [colourDict["continuous"][k] for k in ("10", "4", "3", "2", "1")]
-    cmap = LinearSegmentedColormap.from_list("yusina", steps)
-    mpl.colormaps.register(cmap)
-    mpl.colormaps.register(cmap.reversed())
+    for name, (stops, _) in CMAPS.items():
+        cmap = LinearSegmentedColormap.from_list(name, stops)
+        mpl.colormaps.register(cmap)
+        mpl.colormaps.register(cmap.reversed())
 
 
 _register_cmap()
