@@ -4,8 +4,8 @@ Egypt,MetBrewer,true,"",#DD5129 #0F7BA2 #43B284 #FAB255,,,,
 Hiroshige,MetBrewer,true,"",#AADCE0 #EF8A47 #376795 #F7AA58 #72BCD5 #FFE6B7 #E76254 #1E466E #FFD06F #528FAD,,,,
 Java,MetBrewer,true,"",#663171 #E2998A #CF3A36 #0C7156 #EA7428,,,,
 Johnson,MetBrewer,false,"",#F6C200 #A00E00 #0086A8 #D04E00 #132B69,,,,
-Juarez,MetBrewer,false,"",#A82203 #208CC0 #F1AF3A #CF5E4E #637B31 #003967,,,,
-Lakota,MetBrewer,false,"",#04A3BD #F0BE3D #931E18 #DA7901 #247D3F #20235B,,,,
+Juarez,MetBrewer,false,"",#A82203 #208CC0 #CF5E4E #003967 #637B31 #F1AF3A,,,,
+Lakota,MetBrewer,false,"",#04A3BD #20235B #DA7901 #931E18 #247D3F #F0BE3D,,,,
 Klimt,MetBrewer,false,"",#3C4B99 #C93F55 #EACC62 #469D76 #924099 #DF9ED4,,,,
 Renoir,MetBrewer,true,"",#2F357C #B0799A #E69B00 #355828 #6C5D9E #BF3729 #E48171 #F5BB50 #9D9CD5 #17154F #F6B3B0 #ADA43B,,,,
 Signac,MetBrewer,false,"",#2B9B81 #FE9B00 #F4C40F #FBE183 #633372 #9B3441 #E6A2A6 #92C051 #1F6E9C #9F5691 #E87B89 #D8443C #DE597C #AA7AA1,,,,
@@ -13,11 +13,11 @@ Tam,MetBrewer,false,"",#EF8737 #341648 #FFD353 #9F2D55 #FFB242 #62205F #DE4F33 #
 Thomas,MetBrewer,true,"",#4457A5 #C44D76 #7CAF5C #59386C #B24422 #13315F #447861 #B1A1CC,,,,
 Tiepolo,MetBrewer,false,"",#802417 #C06636 #17486F #E8B960 #CE9344 #646E3B #508EA2 #2B5851,,,,
 VanGogh2,MetBrewer,true,"",#BD3106 #5B7314 #454B87 #D9700E #89A6BB #EEBE04 #C3D6CE #E9A00E,,,,
-Veronese,MetBrewer,false,"",#2C6B67 #67322E #122C43 #99610A #C38F16 #175449 #6E948C,,,,
+Veronese,MetBrewer,false,"",#2C6B67 #122C43 #6E948C #67322E #99610A #175449 #C38F16,,,,
 Nizami,MetBrewer,true,"",#8CC8BC #B83326 #7DA7EA #1D4497 #C8570D #5773C0 #EDB144 #DD7867,,,,
 Cross,MetBrewer,true,good muted one,#EB7926 #62929A #C969A1 #004F63 #CE4441 #859B6C #EE8577 #FFBB44 #122451,,,,
 Derain,MetBrewer,true,"",#AAB5D5 #97C684 #808FE1 #454A74 #EFC86E #6F9969 #5C66A8,,,,
-Isfahan1,MetBrewer,true,"",#4FB6CA #845D29 #054544 #E3C28B #178F92 #4E3910 #175F5D #AE8548,,,,
+Isfahan1,MetBrewer,true,"",#845D29 #4E3910 #AE8548 #054544 #178F92 #175F5D #4FB6CA #E3C28B,,,,
 Isfahan2,MetBrewer,true,"",#34B6C6 #DDC000 #79AD41 #4063A3 #D7ACA1,,,,
 Hokusai1,MetBrewer,true,"",#B75347 #224B5E #E09351 #94B594 #EDC775 #6D2F20 #DF7E66,,,,
 Hokusai3,MetBrewer,true,"",#5A97C1 #95C36E #295384 #74C8C3 #D8D97A #0A2E57,,,,
@@ -27,7 +27,7 @@ Redon,MetBrewer,true,"",#5B859E #1E395F #75884B #1E5A46 #DF8D71 #AF4F2F #D48F90 
 Austria,MetBrewer,false,"",#A40000 #16317D #007E2F #FFCD12 #721B3E #B86092 #00B7A7,,,,
 Kandinsky,MetBrewer,true,"",#3B7C70 #CE9642 #898E9F #3B3A3E,,,,
 Demuth,MetBrewer,true,"",#41485F #F7C267 #591C19 #8B8B99 #B64F32 #D39A2D #5D6174 #9B332B #B9B9B8 #262D42,,,,
-Troy,MetBrewer,true,"",#6C1D0E #235070 #C27668 #7BA0B4 #421401 #0A2D46 #8B3A2B #44728C,,,,
+Troy,MetBrewer,true,"",#6C1D0E #C27668 #421401 #44728C #0A2D46 #8B3A2B #235070 #7BA0B4,,,,
 Cassatt1,MetBrewer,true,"",#E3ABA7 #9D9DC7 #B1615C #5A5A83 #EDD7D9 #C9C9DD #D88782 #8282AA,,,,
 Morgenstern,MetBrewer,true,"",#DB8872 #FFC680 #A56457 #DFBBC8 #FFB178 #C7A2B6 #B08BA5 #98768E,,,,
 Degas,MetBrewer,true,"",#418979 #96410E #591D06 #E5A335 #556219 #053C29 #2B614E,,,,
@@ -37,23 +37,23 @@ Manet,MetBrewer,true,"",#225E92 #D29C44 #43429B #EBC174 #4585B7 #183571 #5E65BE 
 Monet,MetBrewer,true,larger surfaces only,#749E89 #C399A2 #7D87B2 #ABCCBE #E3CACF #C2CAE3 #4E6D58 #9F6E71 #41507B,,,,
 Pissaro,MetBrewer,true,"",#1A5270 #4C825D #8DC7DC #134130 #0E2A4D #508CA7 #8CAE9E,,,,
 Gauguin,MetBrewer,false,"",#811E18 #4C6216 #C88A2C #9E4013 #B04948 #1A472A,,,,
-Ingres,MetBrewer,true,"",#2E77AB #D1B252 #18527E #A97F2F #06314E #7E5522 #041D2C #472C0B,,,,
+Ingres,MetBrewer,true,"",#2E77AB #041D2C #A97F2F #06314E #7E5522 #472C0B #18527E #D1B252,,,,
 OKeeffe1,MetBrewer,true,on black backgrounds,#7DB0EA #F6F2EE #6B200C #EE956A #225BB2 #DA6C42 #133E7E #FBC2A9 #973D21 #BAD6F9 #447FDD,,,,
 Homer1,MetBrewer,true,"",#C3F4F6 #DF7700 #A62F00 #6AD5E8 #F5B642 #32B2DA #FFF179 #551F00,,,,
 Peru2,MetBrewer,true,"",#F19425 #65150B #C0431F #C59349 #961F1F #533D14,,,,
 PNW Bay,PNWColors,true,"",#ED8B00 #00496F #EDD746 #DD4124 #0F85A0,,,,
 PNW Sunset2,PNWColors,true,"",#F2AF4A #1D457F #61599D #EB7F54 #C36377,,,,
-PNW Starfish,PNWColors,true,very lifeless,#E69B99 #59629B #89689D #2C6184 #24492E #BA7999 #015B58,,,,
+PNW Starfish,PNWColors,true,very lifeless,#59629B #24492E #89689D #015B58 #BA7999 #2C6184 #E69B99,,,,
 PNW Sailboat,PNWColors,true,larger areas,#6E7CB9 #F5DB99 #D2848D #7BBCD5 #E89C81 #D0E2AF,,,,
 PNW Cascades,PNWColors,true,"",#E2E260 #2D4030 #677E8E #516823 #88A2B9 #DEC000,,,,
 PNW Sunset,PNWColors,true,quite muted,#9E6374 #DE9B71 #41476B #FBDFA2 #C67B6F #EFBC82 #675478,,,,
 PNW Lake,PNWColors,true,not very legible in most settings,#4A9152 #EEF3FF #CDE5F9 #54450F #85B6CE #362904 #45681E #64A8A8,,,,
 PNW Shuksan2,PNWColors,true,"",#B0CBE7 #EBA07E #5D74A5 #A8554E #FEF7C7,,,,
-PNW Anemone,PNWColors,true,summery,#72E1E1 #EFDDCF #009474 #B0986C #11C2B5 #DCBE9B #F1F4EE,,,,
+PNW Anemone,PNWColors,true,summery,#009474 #72E1E1 #B0986C #EFDDCF #11C2B5 #F1F4EE #DCBE9B,,,,
 Tol bright,Paul Tol,false,"",#4477AA #EE6677 #228833 #CCBB44 #66CCEE #AA3377 #BBBBBB,,,,
-Tol muted,Paul Tol,false,"",#CC6677 #332288 #DDCC77 #117733 #88CCEE #882255 #44AA99 #999933 #AA4499,,,,
+Tol muted,Paul Tol,false,"",#CC6677 #882255 #999933 #AA4499 #332288 #117733 #88CCEE #DDCC77 #44AA99,,,,
 Tol vibrant,Paul Tol,true,"",#EE7733 #0077BB #33BBEE #EE3377 #CC3311 #009988 #BBBBBB,,,,
-Tol light,Paul Tol,true,"",#77AADD #EE8866 #EEDD88 #FFAABB #99DDFF #44BB99 #BBCC33 #AAAA00 #DDDDDD,,,,
+Tol light,Paul Tol,true,"",#77AADD #EEDD88 #AAAA00 #99DDFF #EE8866 #DDDDDD #44BB99 #BBCC33 #FFAABB,,,,
 Okabe-Ito,Okabe & Ito 2008,true,"",#E69F00 #56B4E9 #009E73 #F0E442 #0072B2 #D55E00 #CC79A7,,,,
 Set2,ColorBrewer,true,biosynfoni KDE / fingerprint colours (first four),#66C2A5 #FC8D62 #8DA0CB #E78AC3 #A6D854 #FFD92F #E5C494 #B3B3B3,,,,
 Carto Bold,CARTOColors,false,"",#7F3C8D #11A579 #3969AC #F2B701 #E73F74 #80BA5A #E68310 #008695 #CF1C90 #F97B72,,,,
@@ -65,13 +65,13 @@ Carto Pastel,CARTOColors,true,"",#66C5CC #F6CF71 #F89C74 #DCB0F2 #87C55F #9EB9F3
 seaborn deep,seaborn,true,"",#4C72B0 #DD8452 #55A868 #C44E52 #8172B3 #937860 #DA8BC3 #8C8C8C #CCB974 #64B5CD,,,,
 seaborn muted,seaborn,true,"",#4878D0 #EE854A #6ACC64 #D65F5F #956CB4 #8C613C #DC7EC0 #797979 #D5BB67 #82C6E2,,,,
 seaborn colorblind,seaborn,true,"",#0173B2 #DE8F05 #029E73 #D55E00 #CC78BC #CA9161 #FBAFE4 #949494 #ECE133 #56B4E9,,,,
-Observable 10,Observable Plot,false,"",#4269D0 #EFB118 #FF725C #6CC5B0 #3CA951 #FF8AB7 #A463F2 #97BBF5 #9C6B4E #9498A0,,,,
+Observable 10,Observable Plot,false,"",#4269D0 #9C6B4E #A463F2 #3CA951 #FF8AB7 #97BBF5 #FF725C #6CC5B0 #EFB118 #9498A0,,,,
 Tableau 10,Tableau,true,"",#4E79A7 #F28E2B #E15759 #76B7B2 #59A14F #EDC948 #B07AA1 #FF9DA7 #9C755F #BAB0AC,,,,
-Nord,Nord,true,"",#5E81AC #BF616A #A3BE8C #D08770 #B48EAD #EBCB8B #88C0D0,,,,
-Catppuccin Macchiato,Catppuccin,true,"",#8AADF4 #ED8796 #A6DA95 #F5A97F #C6A0F6 #EED49F #8BD5CA,,,,
-ggsci NPG,ggsci,true,"",#E64B35 #4DBBD5 #00A087 #3C5488 #F39B7F #8491B4 #91D1C2 #DC0000,,,,
-Wes Zissou1,wesanderson (R),true,"",#3B9AB2 #78B7C5 #EBCC2A #E1AF00 #F21A00,,,,
-Wes Darjeeling1,wesanderson (R),true,"",#FF0000 #00A08A #F2AD00 #F98400 #5BBCD6,,,,
+Nord,Nord,true,"",#5E81AC #BF616A #A3BE8C #B48EAD #EBCB8B #D08770 #88C0D0,,,,
+Catppuccin Macchiato,Catppuccin,true,"",#8AADF4 #A6DA95 #ED8796 #EED49F #C6A0F6 #F5A97F #8BD5CA,,,,
+ggsci NPG,ggsci,true,"",#E64B35 #00A087 #3C5488 #8491B4 #DC0000 #4DBBD5 #F39B7F #91D1C2,,,,
+Wes Zissou1,wesanderson (R),true,"",#3B9AB2 #F21A00 #EBCC2A #78B7C5 #E1AF00,,,,
+Wes Darjeeling1,wesanderson (R),true,"",#FF0000 #00A08A #F2AD00 #5BBCD6 #F98400,,,,
 Wes Moonrise3,wesanderson (R),true,"",#85D4E3 #F4B5BD #9C964A #CDC08C #FAD77B,,,,
 Wes Royal1,wesanderson (R),true,"",#899DA4 #C93312 #FAEFD1 #DC863B,,,,
 Wes GrandBudapest2,wesanderson (R),true,"",#E6A0C4 #C6CDF7 #D8A499 #7294D4,,,,
@@ -80,21 +80,21 @@ Wes Rushmore1,wesanderson (R),false,"",#E1BD6D #EABE94 #0B775E #35274A #F2300F,,
 Wes BottleRocket2,wesanderson (R),false,"",#FAD510 #CB2314 #273046 #354823 #1E1E1E,,,,
 biosynfoni,biosynfoni,false,"",#B9C311 #9BC2BA #CFC0D6 #FFAD61 #EB6737 #B4CAD8 #FFEAA0 #FFC4CE,,,,
 seaborn pastel,seaborn,true,"",#A1C9F4 #FFB482 #8DE5A1 #FF9F9B #D0BBFF #DEBB9B #FAB0E4 #CFCFCF #FFFEA3 #B9F2F0,,,,
-seaborn bright,seaborn,true,"",#023EFF #FF7C00 #1AC938 #E8000B #8B2BE2 #9F4800 #F14CC1 #A3A3A3 #FFC400 #00D7FF,,,,
-seaborn dark,seaborn,true,"",#001C7F #B1400D #12711C #8C0800 #591E71 #592F0D #A23582 #3C3C3C #B8850A #006374,,,,
+seaborn bright,seaborn,true,"",#023EFF #E8000B #8B2BE2 #9F4800 #F14CC1 #FFC400 #00D7FF #FF7C00 #A3A3A3 #1AC938,,,,
+seaborn dark,seaborn,true,"",#001C7F #B8850A #592F0D #A23582 #3C3C3C #12711C #591E71 #B1400D #006374 #8C0800,,,,
 Obang-Ogansaek,MMCA traditional standard colours (koreancoloratlas approx.),false,정색 뒤에 같은 방위의 간색: 청 녹(동) 적 홍(남) 황 유황(중앙) 백 벽(서) 흑 자(북); 오행 상생 순서; 벽·자 use the MMCA-standard 벽색/자색 so they read as 청+백 / 적+흑; 백 vanishes on white,#0B6E99 #3D7A4B #C0392B #E8576E #E1B12C #C98A2B #F4F1EA #469EDE #1A1A1A #904464,,,,Korea
 Dancheong,korea_pigments (paint),false,"휘 band order with 빛 steps light->deep: 장단(분홍 장단 주홍) 삼청(분삼청 삼청 군청) 황(자황) 양록(백록 양록 하엽) 육색 석간주(석간주 다자) + 뇌록 ground; 초빛 = pigment + 호분, values from korea_pigments.csv",#EBA18B #D64B2B #C0362C #A9C1DC #5F93CF #26478F #E9B93C #9EC79F #3F9E5A #566D52 #D88266 #8E3B2E #562F27 #626D5E,,,,Korea
-Irworobongdo,described pigments: korea_pigments (paint),false,"일월오봉도: 봉우리는 석청·석록(청록산수), 하늘·물결 군청, 해 주사, 달과 폭포·물보라 호분, 소나무 줄기 석간주, 윤곽 먹. 국립고궁박물관 설명 기준; hex from korea_pigments.csv, nothing sampled from photographs",#26478F #6E9E66 #2C5F8A #C0362C #8E3B2E #F3EFE6 #211F1E,,,,Korea
-Jangsikhwa,described pigments: korea_pigments (paint),false,"궁중장식화 (십장생도·요지연도 등 병풍): 청록산수의 석록·석청, 주사·장단 소나무와 해, 연지 꽃, 자황, 연분 학과 구름, 금, 먹. 안료: 17~20C 회화 채색안료 연구(장식화); hex from korea_pigments.csv, nothing sampled from photographs",#6E9E66 #2C5F8A #C0362C #D64B2B #CB4A6A #E9B93C #F5F2EA #C9A24B #211F1E,,,,Korea
-Hwajo,described pigments: korea_pigments (paint),false,"화조·모란 (궁모란도·화조도): 연지·주사 꽃잎, 자황 꽃술, 석록 잎, 삼청 새 깃, 연분 흰 꽃, 먹. 안료: 장식화 통례; hex from korea_pigments.csv, nothing sampled from photographs",#CB4A6A #C0362C #E9B93C #6E9E66 #5F93CF #F5F2EA #211F1E,,,,Korea
+Irworobongdo,described pigments: korea_pigments (paint),false,"일월오봉도: 봉우리는 석청·석록(청록산수), 하늘·물결 군청, 해 주사, 달과 폭포·물보라 호분, 소나무 줄기 석간주, 윤곽 먹. 국립고궁박물관 설명 기준; hex from korea_pigments.csv, nothing sampled from photographs",#26478F #C0362C #211F1E #2C5F8A #6E9E66 #8E3B2E #F3EFE6,,,,Korea
+Jangsikhwa,described pigments: korea_pigments (paint),false,"궁중장식화 (십장생도·요지연도 등 병풍): 청록산수의 석록·석청, 주사·장단 소나무와 해, 연지 꽃, 자황, 연분 학과 구름, 금, 먹. 안료: 17~20C 회화 채색안료 연구(장식화); hex from korea_pigments.csv, nothing sampled from photographs",#6E9E66 #C0362C #2C5F8A #D64B2B #211F1E #CB4A6A #E9B93C #F5F2EA #C9A24B,,,,Korea
+Hwajo,described pigments: korea_pigments (paint),false,"화조·모란 (궁모란도·화조도): 연지·주사 꽃잎, 자황 꽃술, 석록 잎, 삼청 새 깃, 연분 흰 꽃, 먹. 안료: 장식화 통례; hex from korea_pigments.csv, nothing sampled from photographs",#CB4A6A #211F1E #5F93CF #C0362C #6E9E66 #E9B93C #F5F2EA,,,,Korea
 Bidan,described pigments: korea_pigments (dye),false,"비단 (흉배 자수): 홍화·쪽·자초·치자·괴화 염색과 그 연한 단계 연홍·옥색, 염색 안 한 소색, 현 테두리; hex from korea_pigments.csv, nothing sampled from photographs",#EA577B #495C7F #845B92 #E9C23E #7AAD4C #F1BDCC #9EDCDD #ECDABB #2C2C2C,,,,Korea
-Bucovina,sampled: assets (fresco),false,"Bisericile pictate din Bucovina (Voroneț, Humor, Moldovița, Sucevița), sec. XVI. Identitatea pigmenților după analizele pXRF/FTIR ale picturii murale moldovenești (azurit = albastrul de Voroneț, pământ verde, ocruri, smalt la Sucevița, var, cărbune); valori eșantionate din fotografiile zidurilor (romania_pigments.csv), nu din tabele de pigmenți",#55829E #8D4638 #B69770 #597C56 #5A6F97 #F3EFE6 #211F1E,,,,Romania
-Horezu,sampled: assets (glaze),false,"Ceramica de Horezu (UNESCO 2012): ivoriu de Horezu, brun, cobalt, bleu, verde de cupru; cele cinci culori numite de UNESCO, valori eșantionate din fotografia farfuriilor",#D5D8D3 #745030 #4F608E #6C99BC #61734A #211F1E,,,,Romania
-Maramures,sampled: assets (dye + bead),false,"Portul din Maramureș: roșu și verde de zadie (lână vopsită sintetic, după 1880), mărgelele de sticlă ale zgărdanului, negru, alb de in; valori eșantionate din fotografii; portul viu, nu paleta de dinainte de anilină",#A80D25 #005D1E #3780A4 #CEA90E #DF1C64 #A187D9 #889BE3 #3FB38D #211F1E #F3EFE6,,,,Romania
+Bucovina,sampled: assets (fresco),false,"Bisericile pictate din Bucovina (Voroneț, Humor, Moldovița, Sucevița), sec. XVI. Identitatea pigmenților după analizele pXRF/FTIR ale picturii murale moldovenești (azurit = albastrul de Voroneț, pământ verde, ocruri, smalt la Sucevița, var, cărbune); valori eșantionate din fotografiile zidurilor (romania_pigments.csv), nu din tabele de pigmenți",#55829E #8D4638 #5A6F97 #211F1E #597C56 #F3EFE6 #B69770,,,,Romania
+Horezu,sampled: assets (glaze),false,"Ceramica de Horezu (UNESCO 2012): ivoriu de Horezu, brun, cobalt, bleu, verde de cupru; cele cinci culori numite de UNESCO, valori eșantionate din fotografia farfuriilor",#745030 #6C99BC #4F608E #211F1E #61734A #D5D8D3,,,,Romania
+Maramures,sampled: assets (dye + bead),false,"Portul din Maramureș: roșu și verde de zadie (lână vopsită sintetic, după 1880), mărgelele de sticlă ale zgărdanului, negru, alb de in; valori eșantionate din fotografii; portul viu, nu paleta de dinainte de anilină",#A80D25 #A187D9 #211F1E #3780A4 #005D1E #DF1C64 #F3EFE6 #889BE3 #CEA90E #3FB38D,,,,Romania
 Oltenia,sampled: assets (wool),false,"Scoarță oltenească, sfârșitul sec. XVIII (lână vopsită natural: roibă, indigo, rezedă, coajă de nucă, cârmâz — vopseaua fiecărei culori neanalizată); valori eșantionate din fotografia covorului",#D45A78 #3E4975 #D7B564 #985981 #3C6891 #DDA97C #F3EFE6,,,,Romania
-Sapanta,sampled: assets (paint),false,"Cimitirul Vesel, Săpânța (Stan Ioan Pătraș, din 1935): albastrul de Săpânța și culorile motivelor pe cruci de stejar; valori eșantionate din fotografia crucilor",#2159A6 #832210 #A09642 #71943A #3EA1AE #A88348 #211F1E #F3EFE6,,,,Romania
+Sapanta,sampled: assets (paint),false,"Cimitirul Vesel, Săpânța (Stan Ioan Pătraș, din 1935): albastrul de Săpânța și culorile motivelor pe cruci de stejar; valori eșantionate din fotografia crucilor",#2159A6 #A09642 #3EA1AE #832210 #71943A #211F1E #A88348 #F3EFE6,,,,Romania
 Zagar,sampled: assets (paint),false,"Mobilier pictat săsesc, Muzeul etnografic săsesc din Zagăr: fond albastru, roșu, albastru închis, verde-albastru, cărămiziu; valori eșantionate din fotografia dulapului",#24638E #7B3C45 #344573 #3A7281 #783B29,,,,Romania
-VanGogh,sampled: assets (oil),false,"Van Gogh, Arles 1888: De slaapkamer en Zonnebloemen; chroomgeel, oker, oranje, kobaltblauw, ultramarijn, smaragdgroen, vermiljoen, olijf; waarden afgelezen van de museumscans",#D0A633 #6186A8 #943A33 #1A4C32 #A6730A #C47E39 #424E85 #8B8029,,,,Netherlands
+VanGogh,sampled: assets (oil),false,"Van Gogh, Arles 1888: De slaapkamer en Zonnebloemen; chroomgeel, oker, oranje, kobaltblauw, ultramarijn, smaragdgroen, vermiljoen, olijf; waarden afgelezen van de museumscans",#6186A8 #1A4C32 #C47E39 #424E85 #A6730A #943A33 #8B8029 #D0A633,,,,Netherlands
 Nuenen,sampled: assets (oil),false,"Van Gogh, Nuenen 1884–85 (Brabant): De aardappeleters en de Wevers; lamplicht, aardappeloker, groenzwart, weversbruin, roodbruin, weversgroen, roet; waarden afgelezen van de museumscans",#B5AD65 #CBA261 #A54F2A #5C7851 #6E5B2C #31533B #211F1E,,,,Netherlands
 DeStijl,sampled: assets (oil),false,"De Stijl: Mondriaan, Compositie II in rood, blauw en geel (1930); de drie primaire kleuren met wit en zwart, afgelezen van de scan",#DF2826 #005D9F #F1D96A #211F1E #F3EFE6,,,,Netherlands
 Vermeer,sampled: assets (oil),false,"Vermeer, Het melkmeisje (c. 1660): natuurlijk ultramarijn, loodtingeel, oker, meekraprood, kalkwit, zwart; identiteit van de pigmenten naar het Rijksmuseum-onderzoek, waarden afgelezen van de scan",#183D70 #D1AE6B #7C4135 #986743 #D0CE7E #211F1E,,,,Netherlands

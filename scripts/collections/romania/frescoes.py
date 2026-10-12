@@ -8,13 +8,13 @@ from _sheet import P, main, standard_sheet
 
 SRC = "voronet_last_judgement_ccbysa20.jpg"
 PAL = "Bucovina"
-GROUNDS = [("Voroneț", 0), ("Sucevița", 3), ("Humor", 1), ("Moldovița", 2)]  # church -> index in the palette
+GROUNDS = [("Voroneț", "#55829E"), ("Sucevița", "#597C56"), ("Humor", "#8D4638"), ("Moldovița", "#B69770")]  # church -> its ground colour in the palette
 T = {
     "ro": {"sup": "Bisericile pictate din Bucovina · aceiași pigmenți, alt fond",
            "art": "Voroneț, Judecata de Apoi (peretele de vest, 1547)",
            "credit": "Foto: Alastair Rae, Wikimedia Commons File:Last Judgement (1336873129).jpg, CC BY-SA 2.0; redusă la 1600 px.",
            "pal": f"Paleta `{PAL}` · pigmenții frescei moldovenești",
-           "pal_c": "azurit · ocru roșu · ocru galben · pământ verde · albastru închis · alb de var · negru. Identitatea pigmenților din analizele pXRF/FTIR; "
+           "pal_c": "azurit · ocru roșu · albastru închis · negru · pământ verde · alb de var · ocru galben. Identitatea pigmenților din analizele pXRF/FTIR; "
                     "valorile eșantionate din fotografiile zidurilor (Voroneț, Sucevița), vopseaua cea mai curată a fiecărei familii de nuanță, `romania_pigments.csv`.",
            "extra_t": "Fondul fiecărei biserici", "extra_c": "Albastrul de Voroneț este azurit; Sucevița, verde (smaltul albastru găsit acolo s-a decolorat afară); Humor, ocru roșu; Moldovița, ocru galben și auriu.",
            "plots": "Grafice în paletă",
@@ -34,7 +34,7 @@ T = {
            "art": "Voroneț, the Last Judgement (west wall, 1547)",
            "credit": "Photo: Alastair Rae, Wikimedia Commons File:Last Judgement (1336873129).jpg, CC BY-SA 2.0; reduced to 1600 px.",
            "pal": f"Palette `{PAL}` · the Moldavian fresco pigments",
-           "pal_c": "azurite · red ochre · yellow ochre · green earth · dark blue · lime white · carbon black. Pigment identities from the pXRF/FTIR analyses; "
+           "pal_c": "azurite · red ochre · dark blue · carbon black · green earth · lime white · yellow ochre. Pigment identities from the pXRF/FTIR analyses; "
                     "values sampled from the photographs of the walls (Voroneț, Sucevița), the cleanest paint of each hue family, `romania_pigments.csv`.",
            "extra_t": "Each church's ground", "extra_c": "Voroneț blue is azurite; Sucevița green (the smalt found there has discoloured outdoors); Humor red ochre; Moldovița yellow ochre and gold.",
            "plots": "Plots in the palette",
@@ -54,8 +54,8 @@ T = {
 
 
 def sheet(lang):
-    cols = P.get(PAL)
-    return standard_sheet(T[lang], SRC, PAL, extra=([cols[i] for _, i in GROUNDS], [c for c, _ in GROUNDS]))
+    assert all(c in P.get(PAL) for _, c in GROUNDS)
+    return standard_sheet(T[lang], SRC, PAL, extra=([c for _, c in GROUNDS], [c for c, _ in GROUNDS]))
 
 
 if __name__ == "__main__":

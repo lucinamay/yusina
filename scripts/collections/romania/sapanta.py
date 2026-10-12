@@ -10,7 +10,7 @@ PAL = "Sapanta"
 T = {
     "ro": {"sup": "Cimitirul Vesel, Săpânța · albastrul de Săpânța",
            "art": "Cruci de stejar pictate, Săpânța, Maramureș", "credit": "Foto: Andrei Stroe, Wikimedia Commons File:RO MM Sapanta merry cemetery 3.jpg, CC BY-SA 3.0; redusă la 2000 px.",
-           "pal": f"Paleta `{PAL}`", "pal_c": "albastru de Săpânța · roșu · galben · verde · turcoaz · ocru · negru · alb. Valori eșantionate din fotografia a două cruci, la lumină de zi.",
+           "pal": f"Paleta `{PAL}`", "pal_c": "albastru de Săpânța · galben · turcoaz · roșu · verde · negru · ocru · alb. Valori eșantionate din fotografia a două cruci, la lumină de zi.",
            "plots": "Grafice în paletă",
            "how": "Un cimitir cu culori",
            "how_b": ("Din 1935 Stan Ioan Pătraș a cioplit și pictat crucile de stejar ale satului: un acoperiș, un relief naiv cu meseria sau sfârșitul\n"
@@ -24,7 +24,7 @@ T = {
                       "a vopselelor. Valorile sunt eșantionate dintr-o fotografie, pe două cruci: fața însorită și cea în umbră dau două albastruri, aici e cel mediu.")},
     "en": {"sup": "The Merry Cemetery, Săpânța · the Săpânța blue",
            "art": "Painted oak crosses, Săpânța, Maramureș", "credit": "Photo: Andrei Stroe, Wikimedia Commons File:RO MM Sapanta merry cemetery 3.jpg, CC BY-SA 3.0; reduced to 2000 px.",
-           "pal": f"Palette `{PAL}`", "pal_c": "Săpânța blue · red · yellow · green · turquoise · ochre · black · white. Values sampled from the photograph of two crosses in daylight.",
+           "pal": f"Palette `{PAL}`", "pal_c": "Săpânța blue · yellow · turquoise · red · green · black · ochre · white. Values sampled from the photograph of two crosses in daylight.",
            "plots": "Plots in the palette",
            "how": "A cemetery in colour",
            "how_b": ("From 1935 Stan Ioan Pătraș carved and painted the village's oak crosses: a little roof, a naive relief of the trade or the end of\n"

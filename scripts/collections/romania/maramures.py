@@ -10,7 +10,7 @@ PAL = "Maramures"
 T = {
     "ro": {"sup": "Portul din Maramureș · zadia și zgărdanul",
            "art": "Zgărdan de mărgele pe ie, Maramureș", "credit": "Foto: CEllen, Wikimedia Commons File:Traditional costumes details Maramures (2).jpg, CC BY-SA 4.0; redusă la 2000 px.",
-           "pal": f"Paleta `{PAL}`", "pal_c": "roșu și verde de zadie · mărgele albastre, galbene, roz, violet, bleu, jad · negru · alb de in. Valori eșantionate din două fotografii ale portului.",
+           "pal": f"Paleta `{PAL}`", "pal_c": "roșu de zadie · mărgele violet · negru · mărgele albastre · verde de zadie · mărgele roz · alb de in · mărgele bleu, galbene, jad. Valori eșantionate din două fotografii ale portului.",
            "extra_t": "Zadia: lână, dungi, sintetic", "extra_c": "Cele două zadii (șorțuri) sunt țesute în dungi: negru cu roșu sau cu galben, după sat și după vârstă. Lâna e vopsită sintetic de la sfârșitul sec. XIX.",
            "plots": "Grafice în paletă",
            "how": "Cât de vechi e 'modernul'",
@@ -26,7 +26,7 @@ T = {
                       "nu există o analiză a coloranților pentru aceste piese.")},
     "en": {"sup": "The Maramureș costume · the zadie and the zgărdan",
            "art": "Beaded zgărdan over an ie, Maramureș", "credit": "Photo: CEllen, Wikimedia Commons File:Traditional costumes details Maramures (2).jpg, CC BY-SA 4.0; reduced to 2000 px.",
-           "pal": f"Palette `{PAL}`", "pal_c": "zadie red and green · blue, yellow, pink, violet, periwinkle and jade beads · black · linen white. Values sampled from two photographs of the costume.",
+           "pal": f"Palette `{PAL}`", "pal_c": "zadie red · violet beads · black · blue beads · zadie green · pink beads · linen white · periwinkle, yellow and jade beads. Values sampled from two photographs of the costume.",
            "extra_t": "The zadie: wool, stripes, synthetic dye", "extra_c": "The two aprons are woven in stripes, black with red or with yellow, by village and by age. The wool has been dyed synthetically since the late 19th century.",
            "plots": "Plots in the palette",
            "how": "How old 'modern' is",
@@ -44,8 +44,9 @@ T = {
 
 
 def sheet(lang):
-    cols = P.get(PAL)
-    return standard_sheet(T[lang], SRC, PAL, extra=(cols[:2] + cols[8:], ["roșu", "verde", "negru", "alb"] if lang == "ro" else ["red", "green", "black", "white"]))
+    zadie = ["#A80D25", "#005D1E", "#211F1E", "#F3EFE6"]  # zadie red and green, black, linen; all in the palette
+    assert all(c in P.get(PAL) for c in zadie)
+    return standard_sheet(T[lang], SRC, PAL, extra=(zadie, ["roșu", "verde", "negru", "alb"] if lang == "ro" else ["red", "green", "black", "white"]))
 
 
 if __name__ == "__main__":

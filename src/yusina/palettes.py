@@ -445,14 +445,33 @@ def visibility(colours, surface: str = "#FFFFFF") -> dict:
             "ok": (worst is None or worst["normal"] >= NORMAL_FLOOR) and (worst_cvd is None or worst_cvd[3] >= CVD_FLOOR)}
 
 
-def reorder(colours) -> list[str]:
-    """Greedy order keeping the first colour: each next colour is the one whose smallest
-    distance to the previous one, over normal and every deficiency, is largest."""
-    rest = list(colours[1:]); out = [colours[0]]
-    while rest:
-        nxt = max(rest, key=lambda c: min(distance(out[-1], c), *(distance(out[-1], c, k) for k in _CVD)))
-        rest.remove(nxt); out.append(nxt)
-    return out
+def reorder(colours, surface: str = "#FFFFFF", min_contrast: float = 3.0, exhaustive_n: int = 9) -> list[str]:
+    """Order that maximises the smallest adjacent distance over normal and every deficiency,
+    keeping the first colour. Colours under *min_contrast* on *surface* (white, pale tints)
+    are confined to the last positions, so a series that vanishes on the canvas is never an
+    early one. Exhaustive up to *exhaustive_n* colours, greedy beyond."""
+    import itertools
+
+    colours = list(colours)
+    low = [c for c in colours if contrast_ratio(c, surface) < min_contrast]
+    front = [c for c in colours if c not in low] or colours
+    low = [c for c in low if c not in front]
+    n = len(colours)
+    score = np.array([[min(distance(a, b), *(distance(a, b, k) for k in _CVD)) if a != b else 0.0 for b in colours] for a in colours])
+    idx = {c: i for i, c in enumerate(colours)}
+    f, lo = [idx[c] for c in front], [idx[c] for c in low]
+
+    def worst(order):
+        return min((score[i, j] for i, j in zip(order, order[1:])), default=float("inf"))
+
+    if n <= exhaustive_n:
+        best = max(((f[0], *pf, *pl_) for pf in itertools.permutations(f[1:]) for pl_ in itertools.permutations(lo)), key=worst)
+    else:  # greedy: each next colour is the one farthest from the previous
+        best, rest = [f[0]], f[1:] + lo
+        while rest:
+            pool = [i for i in rest if i in f] or rest
+            nxt = max(pool, key=lambda i: score[best[-1], i]); rest.remove(nxt); best.append(nxt)
+    return [colours[i] for i in best]
 
 
 # ------------------------------------------------------------- tag database ----

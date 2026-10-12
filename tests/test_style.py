@@ -107,8 +107,9 @@ def test_palette_tags():
     assert "Carto Vivid" in P.find(mood="vivid", blue_orange_start=True)
     assert all(isinstance(v, (str, bool, int, float, list, dict)) for v in t.values())  # json-safe
     assert P.visibility(P.get("Okabe-Ito"))["ok"] and not P.visibility(P.get("Nuenen"))["ok"]
-    nu = P.get("Nuenen")
-    assert P.visibility(P.reorder(nu))["worst_pair"][2] > P.visibility(nu)["worst_pair"][2] and sorted(P.reorder(nu)) == sorted(nu)
+    vg = ["#D0A633", "#6186A8", "#943A33", "#1A4C32", "#A6730A", "#C47E39", "#424E85", "#8B8029"]  # VanGogh as sampled, before reorder
+    assert not P.visibility(vg)["ok"] and P.visibility(P.reorder(vg))["ok"] and sorted(P.reorder(vg)) == sorted(vg)
+    assert P.reorder(vg)[-1] == "#D0A633"  # chrome yellow: under 3:1 on white, so it goes last
     m = P.match("Egypt", "Carto Vivid")                                     # Carto Vivid leads orange, blue
     assert [P.base_hue(c) for c in m[:2]] == ["orange", "blue"] and sorted(m) == sorted(P.get("Egypt"))
 
