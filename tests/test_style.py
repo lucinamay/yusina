@@ -106,6 +106,9 @@ def test_palette_tags():
     assert abs(t["warm"] + t["cold"] - 1) < 1e-9 and t["contrast"] > 0
     assert "Carto Vivid" in P.find(mood="vivid", blue_orange_start=True)
     assert all(isinstance(v, (str, bool, int, float, list, dict)) for v in t.values())  # json-safe
+    assert P.visibility(P.get("Okabe-Ito"))["ok"] and not P.visibility(P.get("Nuenen"))["ok"]
+    nu = P.get("Nuenen")
+    assert P.visibility(P.reorder(nu))["worst_pair"][2] > P.visibility(nu)["worst_pair"][2] and sorted(P.reorder(nu)) == sorted(nu)
     m = P.match("Egypt", "Carto Vivid")                                     # Carto Vivid leads orange, blue
     assert [P.base_hue(c) for c in m[:2]] == ["orange", "blue"] and sorted(m) == sorted(P.get("Egypt"))
 

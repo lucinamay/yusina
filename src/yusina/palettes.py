@@ -1,7 +1,7 @@
 """Catalogue of ready-made categorical palettes, grouped by hue scheme.
 
 ``palettes.csv`` (hand-edited, one row per palette) is the source: colours,
-source, cvd_safe, pick, note, the taste tags lines / planes / nice_n, and
+source, pick, note, the taste tags lines / planes / nice_n, and
 ``collection`` (a cultural set such as "Korea"; sheets live in ``gallery/collections/<name>/``). ``pick`` marks the maintainer's favourites;
 ``note`` records where a palette does or does not work. MetBrewer / PNWColors
 colours are in the authors' categorical order. ``scheme(name)`` classifies the
@@ -25,7 +25,6 @@ from matplotlib.colors import to_rgb
 class Palette(TypedDict):
     colours: list[str]
     source: str
-    cvd_safe: bool
     pick: bool
     note: str
     lines: bool | None   # hand-tagged: works for lines / markers; None = not reviewed
@@ -40,7 +39,7 @@ DATA = Path(__file__).parent / "data"
 def _load(path: Path) -> dict[str, Palette]:
     df = pl.read_csv(path, schema_overrides={"note": pl.String, "lines": pl.Boolean, "planes": pl.Boolean,
                                             "nice_n": pl.Int64, "collection": pl.String}).with_columns(pl.col("note").fill_null(""), pl.col("collection").fill_null(""))
-    return {r["name"]: Palette(colours=r["colours"].split(), source=r["source"], cvd_safe=r["cvd_safe"],
+    return {r["name"]: Palette(colours=r["colours"].split(), source=r["source"],
                                pick=r["pick"], note=r["note"], lines=r["lines"], planes=r["planes"],
                                nice_n=r["nice_n"], collection=r["collection"]) for r in df.iter_rows(named=True)}
 
@@ -397,6 +396,65 @@ def gradient_from_image(path, n: int = 6, box=None, hue: float | None = None, re
     return unfade(out, restore, kind=kind) if restore else out
 
 
+# --------------------------------------------------------------- visibility ----
+# Can a reader tell adjacent series apart? OKLab distance (x100) between neighbours,
+# with and without simulated colour-vision deficiency, and contrast against the canvas.
+
+_CVD = {  # Machado, Oliveira & Fernandes 2009, severity 1.0, applied in linear RGB
+    "protan": np.array([[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]]),
+    "deutan": np.array([[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.011820, 0.042940, 0.968881]]),
+    "tritan": np.array([[1.255528, -0.076749, -0.178779], [-0.078411, 0.930809, 0.147602], [0.004733, 0.691367, 0.303900]]),
+}
+NORMAL_FLOOR, CVD_FLOOR = 15.0, 8.0  # OKLab dE x100 below which adjacent series blur: anyone / under a deficiency
+
+
+def _lin(hex_):
+    rgb = np.array(to_rgb(hex_))
+    return np.where(rgb <= 0.04045, rgb / 12.92, ((rgb + 0.055) / 1.055) ** 2.4)
+
+
+def cvd(lin, kind: str):
+    """Linear RGB as seen with *kind* ("protan", "deutan", "tritan") colour-vision deficiency."""
+    return np.clip(_CVD[kind] @ lin, 0, 1)
+
+
+def distance(a: str, b: str, kind: str | None = None) -> float:
+    """OKLab dE x100 between two colours, under *kind* deficiency if given."""
+    la, lb = (_M2 @ np.cbrt(_M1 @ (cvd(_lin(x), kind) if kind else _lin(x))) for x in (a, b))
+    return float(100 * np.linalg.norm(la - lb))
+
+
+def contrast_ratio(colour: str, surface: str = "#FFFFFF") -> float:
+    """WCAG contrast ratio of *colour* on *surface*."""
+    y = [float(np.dot([0.2126, 0.7152, 0.0722], _lin(c))) for c in (colour, surface)]
+    return (max(y) + 0.05) / (min(y) + 0.05)
+
+
+def visibility(colours, surface: str = "#FFFFFF") -> dict:
+    """Adjacent-pair distances (normal and per deficiency), per-colour contrast on *surface*,
+    the worst pair, the worst pair under any deficiency, and ``ok``: every adjacent pair at
+    least NORMAL_FLOOR apart for everyone and CVD_FLOOR under every deficiency."""
+    colours = list(colours)
+    pairs = [{"pair": (i, i + 1), "normal": distance(a, b), **{k: distance(a, b, k) for k in _CVD}}
+             for i, (a, b) in enumerate(zip(colours, colours[1:]))]
+    worst = min(pairs, key=lambda q: q["normal"], default=None)
+    worst_cvd = min(((q["pair"][0], q["pair"][1], k, q[k]) for q in pairs for k in _CVD), key=lambda t: t[3], default=None)
+    return {"pairs": pairs, "contrast": {c: round(contrast_ratio(c, surface), 2) for c in colours},
+            "worst_pair": (*worst["pair"], worst["normal"]) if worst else (0, 0, float("inf")),
+            "worst_cvd": worst_cvd or (0, 0, "", float("inf")),
+            "ok": (worst is None or worst["normal"] >= NORMAL_FLOOR) and (worst_cvd is None or worst_cvd[3] >= CVD_FLOOR)}
+
+
+def reorder(colours) -> list[str]:
+    """Greedy order keeping the first colour: each next colour is the one whose smallest
+    distance to the previous one, over normal and every deficiency, is largest."""
+    rest = list(colours[1:]); out = [colours[0]]
+    while rest:
+        nxt = max(rest, key=lambda c: min(distance(out[-1], c), *(distance(out[-1], c, k) for k in _CVD)))
+        rest.remove(nxt); out.append(nxt)
+    return out
+
+
 # ------------------------------------------------------------- tag database ----
 # Every tag is computed from the colours in OKLCH, so adding a palette to
 # PALETTES is enough; `database()` dumps name -> tags for humans and LLMs.
@@ -512,13 +570,15 @@ def mood(colours) -> str:
 
 
 def tags(name: str) -> dict:
-    """All tags for one catalogue entry: n_colours, source, cvd_safe, pick, note,
-    hue_names, distinct_hue_names, distinct_n, google_like, blue_orange_start, schemes_by_n,
-    warm_cold, contrast, mood, stats."""
+    """All tags for one catalogue entry: n_colours, source, pick, note, cvd_safe / min_de /
+    min_de_cvd (from ``visibility``), hue_names, distinct_hue_names, distinct_n, google_like,
+    blue_orange_start, schemes_by_n, warm_cold, contrast, mood, stats."""
     e = PALETTES[name]
     c = e["colours"]
     warm, cold = warm_cold(c)
-    return dict(colours=list(c), n_colours=len(c), source=e["source"], cvd_safe=e["cvd_safe"],
+    vis = visibility(c)
+    return dict(colours=list(c), n_colours=len(c), source=e["source"], cvd_safe=vis["ok"],
+                min_de=round(vis["worst_pair"][2], 1), min_de_cvd=round(vis["worst_cvd"][3], 1),
                 pick=e["pick"], note=e["note"], hue_names=[hue_name(x) for x in c],
                 distinct_hue_names=distinct_hue_names(c), distinct_n=distinct_n(c), google_like=google_like(c),
                 blue_orange_start=blue_orange_start(c), schemes_by_n=schemes_by_n(c),
